@@ -1,0 +1,29 @@
+{
+  "name": "ux-data-proxy",
+  "version": "1.0.0",
+  "description": "this is a data proxy",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jy02534655/data-proxy.git"
+  },
+  "keywords": [
+    "data",
+    "proxy"
+  ],
+  "author": "魔狼再世",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jy02534655/data-proxy/issues"
+  },
+  "homepage": "https://github.com/jy02534655/data-proxy#readme",
+  "devDependencies": {
+    "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
+}
