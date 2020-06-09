@@ -1,12 +1,6 @@
 import { isObjectLike, set, get, defaults } from "lodash";
 // 用于web请求数据，web端数据一般为重置模式
 export default {
-    // 分页获取列表数据
-    // pageSize:每次加载几条数据，默认为10
-    // page:起始页码，默认为1
-    // requestFun:获取数据方法（必填）这里可以视为代理概念
-    // disposeItem:遍历处理单条数据的方法
-    // isErrorMessage:是否提示错误信息，默认提示
     /**
      * 根据代理配置加载数据
      *

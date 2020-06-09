@@ -8,7 +8,18 @@ git地址:https://github.com/jy02534655/data-proxy
 npm install ux-data-proxy
 
 # 使用
-假如后端返回数据格式如下
+请求数据的方法与返回的数据需要遵循以下规则
+
+1. 此帮助类只是一个代理类，具体分页查询函数还是需要axios等扩展来实现，但是因为设计时考虑了扩展性，可以自定义一些扩展来实现请求数据的功能
+
+1. 返回数据必须是标准json格式数据，并且有以下字段，对应字段名称可以在reader配置中灵活配置，如果返回数据不标准可以用readerTransform函数处理成表格格式
+
+    1. success -> 用于判断请求是否成功
+    1. data -> 最终数据结果集
+    1. total -> 满足当前条件的数据总数，用于分页
+    1. message -> 用于请求失败消息提示
+
+假如后端返回数据格式如下，使用axios请求数据并不做任何处理
 ```js
 {
     "code": 1,
@@ -27,7 +38,19 @@ npm install ux-data-proxy
     }
 }
 ```
-使用axios请求数据并不做任何处理
+代理中reader配置如下即可
+```js
+    reader: {
+        // 数据根节点
+        rootProperty: "data.data.records",
+        successProperty: "data.code",
+        totalProperty: "data.data.total",
+        messageProperty: 'data.data.msg'
+    }
+```
+
+
+vue代码如下（ts写法）
 ```js
 <template>
     <div>

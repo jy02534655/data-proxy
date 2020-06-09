@@ -9,12 +9,14 @@ const defaultProxy = {
     pageSize: 10,
     // 当前页码，默认为1
     page: 1,
-    // 分页每页显示条数字段名称，默认为limit，此参数传递到服务端
+    // 分页每页显示条数字段名称，默认为limit，此参数传递到请求数据函数
     limitParam: 'limit',
-    // 分页页码字段名称，默认为page，此参数传递到服务端
+    // 分页页码字段名称，默认为page，此参数传递到请求数据函数
     pageParam: 'page',
-    // 当前分页配置节点名称，默认为page
+    // 数据源对象接收分页配置节点名称，默认为page
     paginationParam: 'pagination',
+    // 默认参数,默认参数会被相同名称新参数覆盖，必须是一个对象
+    defaultParams: null,
     // 初始化后是否自动加载数据
     autoLoad: false,
     // 扩展，请求失败后执行函数
@@ -58,9 +60,9 @@ export default {
             proxy = store.proxy,
             // 读取代理类型，用.分割
             key = split(proxy.type, '.');
-        // 读取并设置默认配置，默认配置会新设置覆盖
+        // 读取并设置默认配置，默认配置会被新配置覆盖
         store.proxy = defaultsDeep(proxy, defaultProxy);
-        // 将当前代理对象的方法挂载到数据源对象，代理对象的方法会覆盖代理对象原有的方法
+        // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
         // 设置下一级代理类型
         store.proxy.type = drop(key).toString();

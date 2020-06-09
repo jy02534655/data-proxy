@@ -1,7 +1,7 @@
 {
   "name": "ux-data-proxy",
-  "version": "1.0.0",
-  "description": "this is a data proxy",
+  "version": "1.0.2",
+  "description": "this is a vue data proxy",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,7 +12,8 @@
   },
   "keywords": [
     "data",
-    "proxy"
+    "proxy",
+    "vue"
   ],
   "author": "魔狼再世",
   "license": "ISC",

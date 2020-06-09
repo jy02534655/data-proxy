@@ -10,7 +10,7 @@ export default {
        */
     init(store: any) {
         console.log('proxy.promise.init');
-        // 将当前代理对象的方法挂载到数据源对象，代理对象的方法会覆盖代理对象原有的方法
+        // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, this);
         // 根据代理类型挂载代理对象
         // 默认挂载经典代理
@@ -27,8 +27,8 @@ export default {
      *
      *
      * @param {*} {
-     *         requestFun 获取数据的方法，必须返回Promise函数对象
-     *         params 获取数据的方法所需的参数
+     *         requestFun 获取数据的函数，必须返回Promise函数对象
+     *         params 获取数据的函数所需的参数
      *         disposeItem 扩展 处理单个数据对象的函数
      *         reader 读取数据相关配置
      *     }
@@ -38,7 +38,7 @@ export default {
         requestFun, params, disposeItem, reader
     }) {
         return new Promise((resolve, reject) => {
-            // 通过代理方法获取数据
+            // 通过代理函数获取数据
             requestFun(params).then((res: any) => {
                 const me = this as any,
                     // 读取数据相关配置
@@ -63,7 +63,7 @@ export default {
                     const data = get(res, rootProperty),
                         // 获取数据总数
                         total = get(res, totalProperty);
-                    // 如果有遍历单条数据的方法，那么遍历处理数据
+                    // 如果有遍历单条数据的函数，那么遍历处理数据
                     if (disposeItem) {
                         forEach(data, disposeItem);
                     }
