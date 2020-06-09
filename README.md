@@ -1,8 +1,33 @@
+# 说明
+
+这是一个数据代理扩展，灵感来至于ExtJs中的Ext.data.Store
+
+git地址:https://github.com/jy02534655/data-proxy
+
 # 安装代理模块
 npm install ux-data-proxy
 
 # 使用
-
+假如后端返回数据格式如下
+```js
+{
+    "code": 1,
+    "msg": "查询成功",
+    "data": {
+        "records": [{
+            "id": 119,
+            "name": "的鹅鹅鹅饿鹅",
+            "telephone": "18888888888"
+        }, {
+            "id": 118,
+            "name": "未命名",
+            "telephone": "18899999999"
+        }],
+        "total": 62
+    }
+}
+```
+使用axios请求数据并不做任何处理
 ```js
 <template>
     <div>
