@@ -1,4 +1,4 @@
-import { isObjectLike, set, get, defaults } from "lodash";
+import { set, get, defaults } from "lodash";
 // 用于web请求数据，web端数据一般为重置模式
 export default {
     /**
@@ -18,22 +18,16 @@ export default {
             const {
                 pageSize,
                 page,
-                // 获取默认参数
-                defaultParams,
                 paginationParam
             } = proxy
             // 读取参数
-            let params = proxy.params || {};
+            const params = proxy.params || {};
             // 设置分页相关参数
             set(params, proxy.limitParam, pageSize);
             set(params, proxy.pageParam, page);
-            // 如果存在默认参数,则添加默认参数
-            if (isObjectLike(defaultParams)) {
-                // 默认参数会被新参数覆盖
-                params = defaults(params, defaultParams);
-            }
             // 设置代理参数
             proxy.params = params;
+            console.log(proxy.extraParams)
             // console.log(proxy, params)
             // 读取数据
             me.readData(proxy).then((res: any) => {

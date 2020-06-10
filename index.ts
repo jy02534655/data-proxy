@@ -1,6 +1,15 @@
 import promiseProxy from "./promise/index";
 import util from './utils/index'
-import { cloneDeep, mixin, defaultsDeep, split, isFunction, drop } from "lodash";
+import { cloneDeep, isObjectLike, mixin, defaultsDeep, split, isFunction, drop, defaults } from "lodash";
+// 数据源对象可用配置
+// const defaultStore = {
+//     // 扩展，请求失败后执行函数
+//     failure: null,
+//     // 扩展，请求数据前处理请求参数函数
+//     writerTransform: null,
+//     // 扩展，请求数据成功后处理数据结果函数
+//     readerTransform: null
+// }
 // 默认配置参数
 const defaultProxy = {
     // 代理类型，默认为经典代理
@@ -15,16 +24,10 @@ const defaultProxy = {
     pageParam: 'page',
     // 数据源对象接收分页配置节点名称，默认为page
     paginationParam: 'pagination',
-    // 默认参数,默认参数会被相同名称新参数覆盖，必须是一个对象
+    // 默认参数,默认参数会被相同名称新参数覆盖，此参数传递到请求数据函数
     defaultParams: null,
     // 初始化后是否自动加载数据
     autoLoad: false,
-    // 扩展，请求失败后执行函数
-    failure: null,
-    // 扩展，请求数据前处理请求参数函数
-    writerTransform: null,
-    // 扩展，请求数据成功后处理数据结果函数
-    readerTransform: null,
     // 扩展 处理单个数据对象的函数
     disposeItem: null,
     // 读取数据相关配置
@@ -104,7 +107,10 @@ export default {
      * @param {*} [params 参数]
      */
     load(params?: any) {
-        const me = this as any;
+        const me = this as any,
+            proxy = me.proxy,
+            // 获取默认参数
+            { defaultParams } = proxy;
         if (params) {
             // 深度拷贝并处理掉空数据，避免数据变化引起bug
             params = util.clearObject(cloneDeep(params));
@@ -114,8 +120,15 @@ export default {
                 params = me.writerTransform(params);
             }
         }
-        me.proxy.params = params
-        me.proxy.page = 1;
+        // 如果存在默认参数,则添加默认参数
+        if (isObjectLike(defaultParams)) {
+            // 默认参数会被新参数覆盖
+            params = defaults(params, defaultParams);
+        }
+        // 存储参数（排除分页参数）
+        proxy.extraParams = cloneDeep(params);
+        proxy.params = params
+        proxy.page = 1;
         me.loadByProxy();
     },
     /**
@@ -125,5 +138,13 @@ export default {
     reLoad() {
         const me = this as any;
         me.load(me.proxy.params);
+    },
+    /**
+     * 获取当前参数（排除分页参数）
+     *
+     * @returns
+     */
+    getParams() {
+        return (this as any).proxy.extraParams;
     }
 }
