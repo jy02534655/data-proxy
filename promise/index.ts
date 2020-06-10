@@ -1,5 +1,5 @@
 
-import { mixin, get, forEach, isFunction } from "lodash";
+import { mixin, set, get, forEach, defaults, isFunction } from "lodash";
 import classic from "./classic";
 import modern from "./modern";
 // 通过Promise函数请求数据代理
@@ -65,8 +65,8 @@ export default {
                 if (success) {
                     // 获取数据
                     const data = get(res, rootProperty),
-                        // 获取数据总数
-                        total = get(res, totalProperty);
+                        // 获取数据总数，如果后端没有返回数据总数，默认为当前请求的数据总数
+                        total = get(res, totalProperty) || data.length;
                     // 如果有遍历单条数据的函数，那么遍历处理数据
                     if (isFunction(disposeItem)) {
                         forEach(data, disposeItem);
@@ -86,5 +86,65 @@ export default {
                 })
             });
         });
+    },
+    /**
+     * 读取数据并做通用逻辑处理，由子代理实现具体细节
+     *
+     * @returns
+     */
+    afterReadData() {
+        return new Promise((resolve, reject) => {
+            const me = this as any,
+                proxy = me.proxy;
+            me.readData(proxy).then(({ data, total }) => {
+                proxy.total = total;
+                // 如果当前标识为重载数据，重置标识状态为false，预留扩展
+                if (proxy.isReLoad) {
+                    proxy.isReLoad = false;
+                }
+                resolve({ data, total });
+            }).catch((res: any) => {
+                // 数据加载结束
+                reject({
+                    isError: true,
+                    res
+                })
+            })
+        });
+    },
+    /**
+       * 根据代理配置加载数据
+       *
+       */
+    loadByProxy() {
+        const me = this as any,
+            proxy = me.proxy;
+        // 当前代理状态
+        console.log('proxy isLoading', proxy.isLoading);
+        // 如果正在请求数据，不做任何操作，过滤高频请求
+        if (!proxy.isLoading) {
+            // 标识正在请求数据
+            proxy.isLoading = true;
+            // 读取store配置
+            const {
+                pageSize,
+                page
+            } = proxy
+            // 读取参数
+            let params = proxy.params || {};
+            // 设置分页相关参数
+            set(params, proxy.limitParam, pageSize);
+            set(params, proxy.pageParam, page);
+            // 如果有请求数据前处理请求参数函数，执行它
+            if (isFunction(me.writerTransform)) {
+                // 有时候需要在请求前处理参数
+                params = me.writerTransform(params, proxy);
+            }
+            // 设置代理参数
+            proxy.params = params;
+            console.log('extraParams', proxy.extraParams);
+            // 读取并处理数据，调用预留函数，让子代理实现具体逻辑
+            me.beforeReadData();
+        }
     }
 }

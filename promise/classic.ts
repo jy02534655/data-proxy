@@ -2,56 +2,32 @@ import { set, get, defaults } from "lodash";
 // 用于web请求数据，web端数据一般为重置模式
 export default {
     /**
-     * 根据代理配置加载数据
+     * 读取并处理数据
      *
      */
-    loadByProxy() {
-        const me = this as any,
-            proxy = me.proxy;
-        // 当前代理状态
-        console.log('proxy isLoading', proxy.isLoading);
-        // 如果正在请求数据，不做任何操作，过滤高频请求
-        if (!proxy.isLoading) {
-            // 标识正在请求数据
-            proxy.isLoading = true;
-            // 读取store配置
-            const {
+    beforeReadData() {
+        const me = this as any;
+        me.afterReadData().then(({ data, total }) => {
+            me.data = data;
+            const proxy = me.proxy, {
                 pageSize,
                 page,
                 paginationParam
-            } = proxy
-            // 读取参数
-            const params = proxy.params || {};
-            // 设置分页相关参数
-            set(params, proxy.limitParam, pageSize);
-            set(params, proxy.pageParam, page);
-            // 设置代理参数
-            proxy.params = params;
-            console.log(proxy.extraParams)
-            // console.log(proxy, params)
-            // 读取数据
-            me.readData(proxy).then((res: any) => {
-                me.data = res.data;
-                // 获取并更新分页配置，用于分页组件处理数据
-                const pagination = defaults({
-                    total: res.total,
-                    limit: pageSize,
-                    curr: page
-                }, get(me, paginationParam));
-                // 更新分页配置
-                set(me, proxy.paginationParam, pagination);
-                // 获取数据成功
-                me.loadEnd(proxy, {
-                    res
-                })
-            }).catch((res: any) => {
-                // 获取数据失败
-                me.loadEnd(proxy, {
-                    isError: true,
-                    res
-                })
-            })
-        }
+            } = proxy;
+            // 获取并更新分页配置，用于分页组件处理数据
+            const pagination = defaults({
+                total: total,
+                limit: pageSize,
+                curr: page
+            }, get(me, paginationParam));
+            // 更新分页配置
+            set(me, proxy.paginationParam, pagination);
+            // 调用总代理数据加载结束函数
+            me.loadEnd();
+        }).catch((res: any) => {
+            // 调用总代理数据加载结束函数
+            me.loadEnd(res)
+        })
     },
     /**
      * 数据源对象改变每页显示条数，页码重置为1

@@ -172,12 +172,6 @@ const defaultProxy = {
     paginationParam: 'pagination',
     // 初始化后是否自动加载数据
     autoLoad: false,
-    // 扩展，请求失败后执行函数
-    failure: null,
-    // 扩展，请求数据前处理请求参数函数
-    writerTransform: null,
-    // 扩展，请求数据成功后处理数据结果函数
-    readerTransform: null,
     // 扩展 处理单个数据对象的函数
     disposeItem: null,
     // 读取数据相关配置
@@ -299,6 +293,10 @@ const defaultProxy = {
     limitParam: 'pageSize',
     pageParam: 'currentPage',
     autoLoad: true,
+    disposeItem: function(item: any) {
+        console.log(item);
+        // 这里处理单条数据如：item.a = 123;
+    },
     // 读取数据相关配置
     reader: {
         // 数据根节点
