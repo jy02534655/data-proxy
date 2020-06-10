@@ -1,24 +1,6 @@
 import promiseProxy from "./promise/index";
 import util from './utils/index'
 import { cloneDeep, isObjectLike, mixin, defaultsDeep, split, isFunction, drop, defaults } from "lodash";
-// 数据源对象可用配置
-// const defaultStore = {
-//     // 扩展，请求失败后执行函数
-//     failure: null,
-//     // 扩展，请求数据前处理请求参数函数
-//     writerTransform: null,
-//     // 扩展，请求数据成功后处理数据结果函数
-//     readerTransform: null
-// }
-// promise.modern代理数据源可用状态
-// const defaultStore = {
-//     // 是否加载完数据，所有数据加载完成就会变成true，可以修改
-//     isFinished: false,
-//     // 是否加载失败，禁止修改
-//     isError: false,
-//     // 是否处于加载状态，可以修改
-//     isVanLoading: false
-// }
 // 默认配置参数
 const defaultProxy = {
     // 代理类型，默认为经典代理
@@ -33,7 +15,7 @@ const defaultProxy = {
     limitParam: 'limit',
     // 分页页码字段名称，默认为page，此参数传递到请求数据函数
     pageParam: 'page',
-    // 数据源对象接收分页配置节点名称，默认为page
+    // 数据源对象接收分页配置节点名称，默认为pagination
     paginationParam: 'pagination',
     // 默认参数,默认参数会被相同名称新参数覆盖，此参数传递到请求数据函数
     defaultParams: null,

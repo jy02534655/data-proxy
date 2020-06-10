@@ -25,7 +25,7 @@ export default {
         }
     },
     /**
-     *
+     * 
      *
      * @param {*} {
      *         requestFun 获取数据的函数，必须返回Promise函数对象

@@ -156,6 +156,15 @@ const defaultStore = {
     // 扩展，请求数据成功后处理数据结果函数
     readerTransform: null
 }
+// promise.modern代理数据源对象可用状态
+const defaultStore = {
+    // 是否加载完数据，所有数据加载完成就会变成true，可以修改
+    isFinished: false,
+    // 是否加载失败，禁止修改
+    isError: false,
+    // 是否处于加载状态，可以修改
+    isVanLoading: false
+}
 // 代理可用配置
 const defaultProxy = {
     // 代理类型，默认为经典代理
@@ -168,8 +177,6 @@ const defaultProxy = {
     limitParam: 'limit',
     // 分页页码字段名称，默认为page，此参数传递到服务端
     pageParam: 'page',
-    // 当前分页配置节点名称，默认为page
-    paginationParam: 'pagination',
     // 初始化后是否自动加载数据
     autoLoad: false,
     // 扩展 处理单个数据对象的函数
@@ -186,15 +193,20 @@ const defaultProxy = {
         messageProperty: 'message'
     }
 };
+// promise.classic代理可用配置
+const defaultProxy = {
+    // 当前分页配置节点名称，默认为pagination
+    paginationParam: 'pagination'
+};
 ```
 # 可用函数
 ## 通用函数
 ```js
     /**
-         * 初始化,每个数据源对象必须初始化
-         *
-         * @param {*} store,数据源对象
-         */
+     * 初始化,每个数据源对象必须初始化
+     *
+     * @param {*} store,数据源对象
+     */
     init(store: any) {
     },
     /**
@@ -216,27 +228,6 @@ const defaultProxy = {
      * @returns
      */
     getParams() {
-    },
-```
-## promise. 代理
-```js
-    /**
-     *
-     *
-     * @param {*} {
-     *         requestFun 获取数据的函数，必须返回Promise函数对象
-     *         params 获取数据的函数所需的参数
-     *         disposeItem 扩展 处理单个数据对象的函数
-     *         reader 读取数据相关配置
-     *     }
-     * @returns 成功回调 resolve({ data, total }); data数据结果集
-     *          失败回调 reject({
-                    message: '您的网络不佳,请检查您的网络'
-                }) message 提示
-     */
-    readData({
-        requestFun, params, disposeItem, reader
-    }) {
     },
 ```
 ## promise.classic 代理
@@ -264,6 +255,15 @@ const defaultProxy = {
      * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
      */
     refresh({ isDel = false, isAdd = false } = {}) {
+    }
+```
+## promise.modern 代理
+```js
+    /**
+     * 加载下一页数据
+     *
+     */
+    loadNext() {
     }
 ```
 # 二次扩展
@@ -358,5 +358,5 @@ export default {
 
 # TODO
 - [x] 经典代理
-- [ ] 移动端代理
+- [x] 移动端代理
 - [ ] 本地数据代理
