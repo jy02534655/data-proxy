@@ -52,7 +52,7 @@ const defaultProxy = {
 // store.load(); => {data:[]}
 export default {
     /**
-        * 初始化
+         * 初始化,每个数据源对象必须初始化
          *
          * @param {*} store,数据源对象
          */
@@ -132,7 +132,7 @@ export default {
         me.loadByProxy();
     },
     /**
-     * 数据源对象重载数据
+     * 数据源对象重载数据，页码重置为1
      *
      */
     reLoad() {

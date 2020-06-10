@@ -147,6 +147,16 @@ export default class GridDemo extends Vue {
 
 # 可用配置
 ```js
+// 数据源对象可用配置
+const defaultStore = {
+    // 扩展，请求失败后执行函数
+    failure: null,
+    // 扩展，请求数据前处理请求参数函数
+    writerTransform: null,
+    // 扩展，请求数据成功后处理数据结果函数
+    readerTransform: null
+}
+// 代理可用配置
 const defaultProxy = {
     // 代理类型，默认为经典代理
     type: 'promise.classic',
@@ -183,7 +193,85 @@ const defaultProxy = {
     }
 };
 ```
-
+# 可用函数
+## 通用函数
+```js
+    /**
+         * 初始化,每个数据源对象必须初始化
+         *
+         * @param {*} store,数据源对象
+         */
+    init(store: any) {
+    },
+    /**
+     * 数据源对象加载数据，页码重置为1
+     *
+     * @param {*} [params 参数]
+     */
+    load(params?: any) {
+    },
+    /**
+     * 数据源对象重载数据，页码重置为1
+     *
+     */
+    reLoad() {
+    },
+    /**
+     * 获取当前参数（排除分页参数）
+     *
+     * @returns
+     */
+    getParams() {
+    },
+```
+## promise. 代理
+```js
+    /**
+     *
+     *
+     * @param {*} {
+     *         requestFun 获取数据的函数，必须返回Promise函数对象
+     *         params 获取数据的函数所需的参数
+     *         disposeItem 扩展 处理单个数据对象的函数
+     *         reader 读取数据相关配置
+     *     }
+     * @returns 成功回调 resolve({ data, total }); data数据结果集
+     *          失败回调 reject({
+                    message: '您的网络不佳,请检查您的网络'
+                }) message 提示
+     */
+    readData({
+        requestFun, params, disposeItem, reader
+    }) {
+    },
+```
+## promise.classic 代理
+```js
+    /**
+     * 数据源对象改变每页显示条数，页码重置为1
+     *
+     * @param {number} page
+     */
+    loadPageSize(pageSize: number) {
+    },
+    /**
+     * 数据源对象改变页码
+     *
+     * @param {number} page
+     */
+    loadPage(page: number) {
+    },
+    /**
+     * 刷新数据源对象，用于编辑/新增/删除后调用
+     * 编辑后直接重载数据，页码不变
+     * 新增后直接重新加载数据，页码重置为1
+     * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
+     *
+     * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
+     */
+    refresh({ isDel = false, isAdd = false } = {}) {
+    }
+```
 # 二次扩展
 ```js
 import proxy from "ux-data-proxy";

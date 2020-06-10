@@ -32,7 +32,10 @@ export default {
      *         disposeItem 扩展 处理单个数据对象的函数
      *         reader 读取数据相关配置
      *     }
-     * @returns
+     * @returns 成功回调 resolve({ data, total }); data数据结果集
+     *          失败回调 reject({
+                    message: '您的网络不佳,请检查您的网络'
+                }) message 提示
      */
     readData({
         requestFun, params, disposeItem, reader
