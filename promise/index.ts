@@ -1,3 +1,4 @@
+
 import { mixin, get, forEach, isFunction } from "lodash";
 import classic from "./classic";
 import modern from "./modern";
@@ -67,7 +68,7 @@ export default {
                         // 获取数据总数
                         total = get(res, totalProperty);
                     // 如果有遍历单条数据的函数，那么遍历处理数据
-                    if (disposeItem) {
+                    if (isFunction(disposeItem)) {
                         forEach(data, disposeItem);
                     }
                     // 成功回调
