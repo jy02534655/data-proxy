@@ -1,5 +1,5 @@
 
-import { mixin, set, get, forEach, defaults, isFunction } from "lodash";
+import { mixin, set, get, forEach, isFunction } from "lodash";
 import classic from "./classic";
 import modern from "./modern";
 // 通过Promise函数请求数据代理
