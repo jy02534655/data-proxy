@@ -324,11 +324,12 @@ export default {
                 break;
         }
         console.log('newStore.init');
-        proxy.init(store);
-        // 将当前代理对象的方法挂载到数据源对象，代理对象的方法会覆盖代理对象原有的方法
-        // 如果放在 proxy.init(store);之后执行
-        // 它本身的方法会覆盖代理对象的方法，放在前面则相反
+        // 它本身的方法会被代理对象的方法覆盖，放在后面则相反
         mixin(store, this);
+        // 将当前代理对象的方法挂载到数据源对象，代理对象的方法会覆盖代理对象原有的方法
+        proxy.init(store);
+        // 如果放在 proxy.init(store);之后执行
+        // 如果设置了初始化自动加载，首次请求writerTransform不会触发
     },
     // 扩展，请求失败后执行函数
     failure(res: any) {

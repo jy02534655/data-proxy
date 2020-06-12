@@ -1,7 +1,20 @@
 
-import { mixin, set, get, forEach, isFunction } from "lodash";
+import { mixin, set, isFunction, defaultsDeep } from "lodash";
 import classic from "./classic";
 import modern from "./modern";
+// 默认配置参数
+const defaultProxy = {
+    // 每次加载几条数据，默认为10
+    pageSize: 10,
+    // 当前页码，默认为1
+    page: 1,
+    // 数据总数，禁止更改
+    total: 0,
+    // 分页每页显示条数字段名称，默认为limit，此参数传递到请求数据函数
+    limitParam: 'limit',
+    // 分页页码字段名称，默认为page，此参数传递到请求数据函数
+    pageParam: 'page'
+};
 // 通过Promise函数请求数据代理
 export default {
     /**
@@ -10,9 +23,13 @@ export default {
        * @param {*} store,数据源对象
        */
     init(store: any) {
-        console.log('proxy.promise.init');
+        const me = this as any,
+            proxy = store.proxy;
+        // 读取并设置默认配置，默认配置会被新配置覆盖
+        store.proxy = defaultsDeep(proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
-        mixin(store, this);
+        mixin(store, me);
+        console.log('proxy.promise.init', store.proxy);
         // 根据代理类型挂载代理对象
         // 默认挂载经典代理
         switch (store.proxy.type) {
@@ -20,73 +37,11 @@ export default {
                 mixin(store, modern);
                 break;
             default:
-                mixin(store, classic);
+                classic.init(store);
                 break;
         }
     },
-    /**
-     * 
-     *
-     * @param {*} {
-     *         requestFun 获取数据的函数，必须返回Promise函数对象
-     *         params 获取数据的函数所需的参数
-     *         disposeItem 扩展 处理单个数据对象的函数
-     *         reader 读取数据相关配置
-     *     }
-     * @returns 成功回调 resolve({ data, total }); data数据结果集
-     *          失败回调 reject({
-                    message: '您的网络不佳,请检查您的网络'
-                }) message 提示
-     */
-    readData({
-        requestFun, params, disposeItem, reader
-    }) {
-        return new Promise((resolve, reject) => {
-            // 通过代理函数获取数据
-            requestFun(params).then((res: any) => {
-                const me = this as any,
-                    // 读取数据相关配置
-                    {
-                        // 数据根节点名称
-                        rootProperty,
-                        // 用于判断请求是否成功的节点名称
-                        successProperty,
-                        // 数据总数节点名称
-                        totalProperty,
-                        // 请求失败后失败消息节点名称
-                        messageProperty } = reader;
-                // 如果有请求数据成功后处理数据结果函数，执行它
-                if (isFunction(me.readerTransform)) {
-                    // 有时候后端返回的数据可能并不符合规范，可以用这个扩展函数处理一下
-                    res = me.readerTransform(res);
-                }
-                // 获取请求数据结果状态
-                const success = get(res, successProperty);
-                if (success) {
-                    // 获取数据
-                    const data = get(res, rootProperty),
-                        // 获取数据总数，如果后端没有返回数据总数，默认为当前请求的数据总数
-                        total = get(res, totalProperty) || data.length;
-                    // 如果有遍历单条数据的函数，那么遍历处理数据
-                    if (isFunction(disposeItem)) {
-                        forEach(data, disposeItem);
-                    }
-                    // 成功回调
-                    resolve({ data, total });
-                } else {
-                    // 失败回调
-                    reject({
-                        message: get(res, messageProperty)
-                    });
-                }
-            }).catch(() => {
-                // 失败回调
-                reject({
-                    message: '您的网络不佳,请检查您的网络'
-                })
-            });
-        });
-    },
+
     /**
      * 读取数据并做通用逻辑处理，由子代理实现具体细节
      *
@@ -114,7 +69,7 @@ export default {
     },
     /**
        * 根据代理配置加载数据
-       *
+       * 这里不接收params是为了避免调整页码等参数时需要传参
        */
     loadByProxy() {
         const me = this as any,
@@ -129,9 +84,8 @@ export default {
             const {
                 pageSize,
                 page
-            } = proxy
-            // 读取参数
-            let params = proxy.params || {};
+            } = proxy;
+            let { params = {}} = proxy;
             // 设置分页相关参数
             set(params, proxy.limitParam, pageSize);
             set(params, proxy.pageParam, page);
@@ -146,5 +100,14 @@ export default {
             // 读取并处理数据，调用预留函数，让子代理实现具体逻辑
             me.beforeReadData();
         }
+    },
+    /**
+    * 数据源对象加载数据，页码重置为1
+    *
+    */
+    subLoad() {
+        const me = this as any;
+        me.proxy.page = 1;
+        me.loadByProxy();
     }
 }

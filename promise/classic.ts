@@ -1,6 +1,27 @@
-import { set, get, defaults } from "lodash";
+import { set, get, defaults, mixin, defaultsDeep } from "lodash";
+// 默认配置参数
+const defaultProxy = {
+    // 代理类型，默认为经典代理
+    // 数据源对象接收分页配置节点名称，默认为page
+    paginationParam: 'pagination'
+};
 // 用于web请求数据，web端数据一般为重置模式
+
 export default {
+    /**
+    * 初始化,每个数据源对象必须初始化
+    *
+    * @param {*} store,数据源对象
+    */
+    init(store: any) {
+        const me = this as any,
+            proxy = store.proxy;
+        // 读取并设置默认配置，默认配置会被新配置覆盖
+        store.proxy = defaultsDeep(proxy, defaultProxy);
+        // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
+        mixin(store, me);
+        console.log('proxy.promise.classic.init', me.proxy);
+    },
     /**
      * 读取并处理数据
      *

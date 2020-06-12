@@ -28,10 +28,8 @@ export default {
             })
         }
     },
-    /**
-     * 加载下一页数据
-     *
-     */
+    // 加载store下一页
+    // store:数据源（必填）
     loadNext() {
         const me = this as any,
             proxy = me.proxy,
