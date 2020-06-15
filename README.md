@@ -49,7 +49,7 @@ npm install ux-data-proxy
     }
 ```
 
-
+## promise.classic代理实现分页查询等
 vue代码如下（ts写法）
 ```js
 <template>
@@ -140,6 +140,301 @@ export default class GridDemo extends Vue {
     proxyCurrentChange(page: number, tabName = "tableList") {
         // console.log("onCurrentChange", page);
         this[tabName].loadPage(page);
+    }
+}
+</script>
+```
+## promise.classic+local代理 实现分页，表列头可配置并保存配置到本地
+vue代码如下（ts写法）
+```js
+<template>
+    <div>
+        <div>
+            <!-- 省略查询html代码 -->
+        </div>
+        <!-- https://xuliangzhan_admin.gitee.io/vxe-table/#/table/start/install  查看vxe-grid使用方法-->
+        <vxe-grid
+            id="CustomerGrid"
+            height="100%"
+            border
+            show-overflow
+            column-key
+            align="center"
+            class="grid"
+            ref="xTable"
+            :toolbar="tableList.toolbar"
+            :data="tableList.data"
+            :columns="tableList.column"
+            :seq-config="{seqMethod: seqMethod}"
+            :custom-config="{checkMethod:checkMethod}"
+            :highlight-hover-row="true"
+            @custom="onCustomChange"
+        ></vxe-grid>
+        <el-pagination
+            @size-change="onSizeChange"
+            @current-change="onCurrentChange"
+            :current-page="tableList.pagination.curr"
+            :page-sizes="[5, 10, 20 ,30]"
+            :page-size="tableList.pagination.limit"
+            :total="tableList.pagination.total"
+            layout="total, sizes, prev, pager, next, jumper"
+        ></el-pagination>
+    </div>
+</template>
+<script lang='ts'>
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { Action } from "vuex-class";
+import proxy from "ux-data-proxy";
+import Sortable from "sortablejs";
+import { flatMap, find, sortBy, compact, isEmpty } from "lodash";
+@Component({
+    name: "GridDemo"
+})
+export default class GridDemo extends Vue {
+    // 定义在vuex中的请求数据方法，只要返回的是Promise类型即可
+    @Action("list") gridList: any;
+    // 预留配置-列表配置
+    // 列表代理对象
+    tableList: any = {
+        //支持冬天配置列
+        toolbar: {
+            custom: true
+        },
+        // 省略字段配置
+        column: [],
+        // 列表数据源
+        data: [],
+        // 代理配置
+        proxy: {
+            // 请求数据方法
+            requestFun: this.gridList,
+            // 分页每页显示条数字段名称，默认为limit，此参数传递到服务端
+            limitParam: "pageSize",
+            // 分页页码字段名称，默认为page，此参数传递到服务端
+            pageParam: "current",
+            // 初始化后自动加载数据
+            autoLoad: true,
+            // 读取数据相关配置
+            reader: {
+                // 数据根节点
+                rootProperty: "data.data.records",
+                successProperty: "data.code",
+                totalProperty: "data.data.total",
+                messageProperty: "data.data.msg"
+            }
+        }
+    };
+
+    // 每页显示数量变化
+    onSizeChange(pageSize: number) {
+        this.proxySizeChange(pageSize);
+    }
+
+    // 页码发生变化
+    onCurrentChange(page: number) {
+        this.proxyCurrentChange(page);
+    }
+
+    //根据条件查询
+    proxyQuery(params: any, tabName = "tableList") {
+        // console.log("onSizeChange", pageSize);
+        this[tabName].load(params);
+    }
+
+    //每页显示数量变化
+    proxySizeChange(pageSize: number, tabName = "tableList") {
+        // console.log("onSizeChange", pageSize);
+        this[tabName].loadPageSize(pageSize);
+    }
+
+    // 页码发生变化
+    proxyCurrentChange(page: number, tabName = "tableList") {
+        // console.log("onCurrentChange", page);
+        this[tabName].loadPage(page);
+    }
+
+    //以下是表列头可配置并保存配置到本地
+    localData: any = {
+        data: {},
+        proxy: {
+            autoLoad: true,
+            type: "local"
+        }
+    };
+    // 监听本地配置
+    @Watch("localData.data")
+    updateLocalData(data: any) {
+        const me = this as any;
+        // 等待视图绘制完毕
+        me.$nextTick(() => {
+            // 读取本地配置，根据配置控制表格排序与列隐藏
+            const { sortable, hiddenField } = data;
+            me.sortableByTitle(sortable);
+            me.hiddenByField(hiddenField);
+        });
+    }
+    /**
+     * 列表根据title配置顺序排序
+     *
+     * @param {*} data  如:['序号','姓名']
+     * @param {*} tabName 默认xTable
+     * @memberof mixinColumn
+     */
+    sortableByTitle(data: any, tabName: string = "xTable") {
+        const me = this as any,
+            xTable = me.$refs[tabName];
+        if (!isEmpty(data) && xTable) {
+            // 获取当前表格列配置
+            let { fullColumn } = xTable.getTableColumn();
+            // 遍历排序数组
+            data.forEach((item: any, index: any) => {
+                // 根据标题找到对应的列
+                const column = find(fullColumn, { title: item });
+                if (column) {
+                    // 设置列的排序值
+                    column.sortableIndex = index;
+                }
+            });
+            // 根据排序值重新排序
+            fullColumn = sortBy(fullColumn, "sortableIndex");
+            // 重载列配置实现重新排序
+            xTable.loadColumn(fullColumn);
+        }
+    }
+    /**
+     * 列表根据field配置隐藏指定列
+     *
+     * @param {*} data 如：['name','age']
+     * @param {string} [tabName="xTable"]
+     * @memberof mixinColumn
+     */
+    hiddenByField(data: any, tabName: string = "xTable") {
+        const me = this as any,
+            xTable = me.$refs[tabName];
+        if (!isEmpty(data) && xTable) {
+            // 获取当前表格列配置
+            data.forEach((item: any) => {
+                // 根据field配置找到对应列并隐藏
+                const column = xTable.getColumnByField(item);
+                if (column) {
+                    xTable.hideColumn(column);
+                }
+            });
+        }
+    }
+    /**
+     * 自定义列配置发生变化时
+     *
+     * @param {*} [{
+     *         localName = 'localData',
+     *         tabName = "xTable" }={}]
+     * @memberof mixinColumn
+     */
+    customChange({ localName = "localData", tabName = "xTable" }: any = {}) {
+        const me = this as any,
+            xTable = me.$refs[tabName],
+            // 遍历列配置
+            data = flatMap(xTable.getTableColumn().fullColumn, function(
+                item: any
+            ) {
+                // 获取隐藏列的field
+                return !item.visible ? item.property : "";
+            });
+        me[localName].saveDataByDebounce("hiddenField", compact(data));
+    }
+
+    /**
+     * 自定义列是否允许列选中的方法
+     *
+     * @param {*} { column }
+     * @returns
+     * @memberof mixinColumn
+     */
+    checkMethod({ column }: any) {
+        // 只有配置了field属性才运行
+        return !!column.property;
+    }
+
+    /**
+     * 自定义列配置发生变化时
+     *
+     * @memberof mixinColumn
+     */
+    onCustomChange() {
+        this.customChange();
+    }
+
+    /**
+     * 初始化列头拖拽功能
+     *
+     * @param {*} [{
+     *         localName = 'localData',
+     *         tabName = "xTable" }={}]
+     * @memberof mixinColumn
+     */
+    columnDrop({ localName = "localData", tabName = "xTable" }: any = {}) {
+        const me = this as any;
+        const xTable = me.$refs[tabName];
+        Sortable.create(
+            // 监听列表头
+            xTable.$el.querySelector(
+                ".body--wrapper>.vxe-table--header .vxe-header--row"
+            ),
+            {
+                handle: ".vxe-header--column:not(.col--fixed)",
+                onEnd: ({ newIndex, oldIndex }) => {
+                    const { fullColumn, tableColumn } = xTable.getTableColumn();
+                    // 获取列的旧序号
+                    const oldColumnIndex = xTable.getColumnIndex(
+                        tableColumn[oldIndex]
+                    );
+                    // 获取列的新序号
+                    const newColumnIndex = xTable.getColumnIndex(
+                        tableColumn[newIndex]
+                    );
+                    // 移动到目标列
+                    const currRow = fullColumn.splice(oldColumnIndex, 1)[0];
+                    fullColumn.splice(newColumnIndex, 0, currRow);
+                    xTable.loadColumn(fullColumn);
+                    // 根据列的title配置获取排序
+                    const data = flatMap(fullColumn, function(item: any) {
+                        return item.title;
+                    });
+                    // 存储配置数据
+                    me[localName].saveDataByDebounce("sortable", compact(data));
+                }
+            }
+        );
+    }
+
+    // 显示自定义列配置项
+    onShowCustom() {
+        const me = this as any,
+            xToolbar = me.$refs.xToolbar;
+        xToolbar.customOpenEvent();
+    }
+    /**
+     * 初始化本地配置
+     *
+     * @memberof mixinColumn
+     */
+    created() {
+        const me = this as any,
+            // 当前视图配置数据
+            localData = me.localData;
+        // 根据路由设置当前视图存储路径
+        localData.proxy.path = me.$route.name;
+        // 初始化存储代理
+        proxy.init(localData);
+        // 初始化数据代理对象
+        proxy.init(me.tableList);
+        // 等待视图绘制完成
+        me.$nextTick(() => {
+            // 初始化列头拖拽功能
+            me.columnDrop();
+            // 手动将表格和工具栏进行关联
+            me.$refs.xTable.connect(me.$refs.xToolbar);
+        });
     }
 }
 </script>
