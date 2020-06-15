@@ -1,6 +1,5 @@
 // 用于移动端请求数据，移动端数据一般为追加模式
 export default {
-
     /**
      * 读取并处理数据
      *
@@ -46,7 +45,7 @@ export default {
     *
     * @param {*} [{ res = {}, isError = false }={}]
     */
-    modernAfterReadData({ res = {}, isError = false } = {}) {
+    modernAfterReadData({ res = {}, isError = false } : any = {}) {
         const me = this as any;
         if (!isError) {
             // 判断是否需要加载更多数据

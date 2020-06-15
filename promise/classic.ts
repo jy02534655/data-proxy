@@ -5,8 +5,7 @@ const defaultProxy = {
     // 数据源对象接收分页配置节点名称，默认为page
     paginationParam: 'pagination'
 };
-// 用于web请求数据，web端数据一般为重置模式
-
+// 多用于web端获取数据，新数据会覆盖原有数据
 export default {
     /**
     * 初始化,每个数据源对象必须初始化
@@ -14,13 +13,12 @@ export default {
     * @param {*} store,数据源对象
     */
     init(store: any) {
-        const me = this as any,
-            proxy = store.proxy;
+        const me = this as any;
         // 读取并设置默认配置，默认配置会被新配置覆盖
-        store.proxy = defaultsDeep(proxy, defaultProxy);
+        defaultsDeep(store.proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
-        console.log('proxy.promise.classic.init', me.proxy);
+        console.log('proxy.promise.classic.init', store.proxy);
     },
     /**
      * 读取并处理数据
@@ -79,7 +77,7 @@ export default {
      *
      * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
      */
-    refresh({ isDel = false, isAdd = false } = {}) {
+    refresh({ isDel = false, isAdd = false }: any = {}) {
         const me = this as any,
             proxy = me.proxy;
         // 获取当前页码

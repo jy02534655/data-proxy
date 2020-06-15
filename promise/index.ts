@@ -26,13 +26,13 @@ export default {
         const me = this as any,
             proxy = store.proxy;
         // 读取并设置默认配置，默认配置会被新配置覆盖
-        store.proxy = defaultsDeep(proxy, defaultProxy);
+        defaultsDeep(proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
-        console.log('proxy.promise.init', store.proxy);
+        console.log('proxy.promise.init', proxy);
         // 根据代理类型挂载代理对象
         // 默认挂载经典代理
-        switch (store.proxy.type) {
+        switch (proxy.type) {
             case 'modern':
                 mixin(store, modern);
                 break;

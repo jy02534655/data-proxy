@@ -13,6 +13,10 @@ npm install --save-dev typescript
 
 npm i --save lodash
 
+### lowdb
+
+npm install lowdb
+
 ## 发布
 
 ::发布前需要把npm源切回npm

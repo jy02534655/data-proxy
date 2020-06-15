@@ -144,7 +144,17 @@ export default class GridDemo extends Vue {
 }
 </script>
 ```
+# 可用代理
 
+## promise.classic
+多用于web端获取列表数据，新数据会覆盖原有数据
+
+## promise.modern
+多用于移动端获取列表数据，新数据会追加到原有数据之后
+
+## local
+如果提供了读取数据函数，数据通过函数获取，如果没有则读取缓存数据，新数据会覆盖原有数据
+如果提供了保存数据函数，数据通过保存数据保存，如果没有则缓存数据，新数据会覆盖原有数据
 # 可用配置
 ```js
 // 数据源对象可用配置
@@ -180,7 +190,7 @@ const defaultProxy = {
     // 初始化后是否自动加载数据
     autoLoad: false,
     // 扩展 处理单个数据对象的函数
-    disposeItem: null,
+    disposeItem: null,           
     // 读取数据相关配置
     reader: {
         // 数据根节点名称
@@ -193,10 +203,26 @@ const defaultProxy = {
         messageProperty: 'message'
     }
 };
+// promise.开头代理可用配置
+const defaultProxy = {
+    // 请求数据方法,必须
+    requestFun: null
+};
 // promise.classic代理可用配置
 const defaultProxy = {
     // 当前分页配置节点名称，默认为pagination
     paginationParam: 'pagination'
+};
+// local代理可用配置
+const defaultProxy = {
+    // 请求数据方法
+    requestFun: null,
+    // 保存数据方法
+    saveFun: null,
+    // 本地默认数据库名称
+    dbName: 'ux-local-data',
+    // 本地存储路径，必填
+    path: ''
 };
 ```
 # 可用函数
@@ -210,14 +236,18 @@ const defaultProxy = {
     init(store: any) {
     },
     /**
-     * 数据源对象加载数据，页码重置为1
+     * 数据源对象加载数据
+     * promise.开头的代理页码会重置为1
+     * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
      *
      * @param {*} [params 参数]
      */
     load(params?: any) {
     },
     /**
-     * 数据源对象重载数据，页码重置为1
+     * 数据源对象重载数据
+     * promise.开头的代理页码会重置为1
+     * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
      *
      */
     reLoad() {
@@ -264,6 +294,24 @@ const defaultProxy = {
      *
      */
     loadNext() {
+    }
+```
+## local 代理
+```js
+    /**
+     * 保存配置（data的值）
+     *
+     */
+    saveData() {
+    },
+    /**
+     * 保存某个配置（data.name的值），默认1秒内只会执行saveData方法一次,避免高频调用
+     *
+     * @param {string} name 字段名称
+     * @param {*} data 值
+     * @param {number} [wait=1000] 防抖动时间，毫秒
+     */
+    saveDataByDebounce(name: string, data: any, wait: number = 1000) {
     }
 ```
 # 二次扩展
@@ -360,4 +408,5 @@ export default {
 # TODO
 - [x] 经典代理
 - [x] 移动端代理
-- [ ] 本地数据代理
+- [x] 本地数据代理
+- [] 本地数据代理，支持本地数据分页

@@ -1,4 +1,5 @@
 import promiseProxy from "./promise/index";
+import localProxy from "./local/index";
 import util from './utils/index'
 import { cloneDeep, isObjectLike, mixin, defaultsDeep, split, isFunction, drop, defaults, get, forEach } from "lodash";
 
@@ -64,15 +65,19 @@ export default {
             // 读取代理类型，用.分割
             key = split(proxy.type, '.');
         // 读取并设置默认配置，默认配置会被新配置覆盖
-        store.proxy = defaultsDeep(proxy, defaultProxy);
+        defaultsDeep(proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
         console.log('proxy.init', proxy);
         // 设置下一级代理类型
-        store.proxy.type = drop(key).toString();
+        proxy.type = drop(key).toString();
         // 根据代理类型第一级挂载代理对象
         switch (key[0]) {
-            // 预留扩展，可以实现其他代理类
+            // 本地与远程代理
+            case 'local':
+                localProxy.init(store);
+                break;
+            // 经典代理
             default:
                 // 初始化代理对象
                 promiseProxy.init(store);
@@ -88,7 +93,7 @@ export default {
      *
      * @param {*} { res 请求失败结果数据集, isError = false 是否加载失败}
      */
-    loadEnd({ res = {}, isError = false } = {}) {
+    loadEnd({ res = {}, isError = false }: any = {}) {
         console.log('loadEnd');
         console.log('res:', res);
         console.log('isError:', isError);
@@ -105,8 +110,9 @@ export default {
         }
     },
     /**
-     * 数据源对象加载数据，页码重置为1
-     *
+     * 数据源对象加载数据
+     * promise.开头的代理页码会重置为1
+     * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
      * @param {*} [params 参数]
      */
     load(params?: any) {
@@ -130,8 +136,9 @@ export default {
         me.subLoad();
     },
     /**
-     * 数据源对象重载数据，页码重置为1
-     *
+     * 数据源对象重载数据，promise.开头的代理页码会重置为1
+     * promise.开头的代理页码会重置为1
+     * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
      */
     reLoad() {
         const me = this as any;
@@ -163,7 +170,7 @@ export default {
     */
     readData({
         requestFun, params, disposeItem, reader
-    }) {
+    }: any = {}) {
         return new Promise((resolve, reject) => {
             if (!requestFun) {
                 // 失败回调

@@ -25,6 +25,7 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "lowdb": "^1.0.0"
   }
 }
