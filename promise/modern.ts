@@ -17,7 +17,7 @@ export default {
             // 如果store的数据大于或者等于数据总数,说明没有更多数据了,无须请求服务端数据
             me.modernAfterReadData();
         } else {
-            me.afterReadData().then(({ data }) => {
+            me.afterReadData().then(({ data }: any) => {
                 me.data.push(...data);
                 // 数据加载结束
                 me.modernLoadEnd();
@@ -45,7 +45,7 @@ export default {
     *
     * @param {*} [{ res = {}, isError = false }={}]
     */
-    modernAfterReadData({ res = {}, isError = false } : any = {}) {
+    modernAfterReadData({ res = {}, isError = false }: any = {}) {
         const me = this as any;
         if (!isError) {
             // 判断是否需要加载更多数据

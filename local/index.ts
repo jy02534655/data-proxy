@@ -38,7 +38,7 @@ export default {
         const me = this as any,
             proxy = me.proxy;
         // 先请求数据，如果没有设置请求方法或者获取数据失败则转为读取本地数据
-        me.readData(proxy).then(({ data }) => {
+        me.readData(proxy).then(({ data }:any) => {
             me.data = data;
         }).catch(() => {
             const data = me.db.get(me.proxy.path).value();

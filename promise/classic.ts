@@ -26,7 +26,7 @@ export default {
      */
     beforeReadData() {
         const me = this as any;
-        me.afterReadData().then(({ data, total }) => {
+        me.afterReadData().then(({ data, total }:any) => {
             me.data = data;
             const proxy = me.proxy, {
                 pageSize,
@@ -70,8 +70,8 @@ export default {
         me.loadByProxy();
     },
     /**
-     * 刷新数据源对象，用于编辑/新增/删除后调用
-     * 编辑后直接重载数据，页码不变
+     * 刷新数据源对象，用于修改/新增/删除后调用
+     * 修改后直接重载数据，页码不变
      * 新增后直接重新加载数据，页码重置为1
      * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
      *
@@ -98,6 +98,6 @@ export default {
             // 新增后直接到第一页
             page = 1;
         }
-        me.loadPage(me, page);
+        me.loadPage(page);
     }
 }
