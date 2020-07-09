@@ -51,7 +51,7 @@ export default {
         return new Promise((resolve, reject) => {
             const me = this as any,
                 proxy = me.proxy;
-            me.readData(proxy).then(({ data, total }:any) => {
+            me.readData(proxy).then(({ data, total }: any) => {
                 proxy.total = total;
                 // 如果当前标识为重载数据，重置标识状态为false，预留扩展
                 if (proxy.isReLoad) {

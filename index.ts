@@ -1,7 +1,7 @@
 import promiseProxy from "./promise/index";
 import localProxy from "./local/index";
 import util from './utils/index'
-import { cloneDeep, isObjectLike, mixin, defaultsDeep, split, isFunction, drop, defaults, get, forEach } from "lodash";
+import { cloneDeep, isObjectLike, mixin, defaultsDeep, split, isFunction, drop, defaults, get, set, forEach } from "lodash";
 
 // 数据源对象可用配置
 // const defaultStore = {
@@ -41,7 +41,11 @@ const defaultProxy = {
         totalProperty: "total",
         // 请求失败后失败消息节点名称
         messageProperty: 'message'
-    }
+    },
+    // 排序字段名称
+    sortParam: 'orderBy',
+    // 排序方式字段名称
+    directionParam: 'orderSort'
 };
 // 这是一个数据代理
 // 俄罗斯套娃模式，支持向上向下扩展
@@ -113,13 +117,14 @@ export default {
      * 数据源对象加载数据
      * promise.开头的代理页码会重置为1
      * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
-     * @param {*} [params 参数]
+     *
+     * @param {*} [params] 查询参数
      */
     load(params?: any) {
         const me = this as any,
             proxy = me.proxy,
             // 获取默认参数
-            { defaultParams } = proxy;
+            { defaultParams, sortData } = proxy;
         if (params) {
             // 深度拷贝并处理掉空数据，避免数据变化引起bug
             params = util.clearObject(cloneDeep(params));
@@ -129,8 +134,13 @@ export default {
             // 默认参数会被新参数覆盖
             params = defaults(params, defaultParams);
         }
-        // 存储参数（排除分页参数）
+        // 存储参数（排除分页参数与排序参数）
         proxy.extraParams = cloneDeep(params);
+        // 如果存在排序参数,则添加排序参数
+        if (isObjectLike(sortData)) {
+            // 默认参数会被新参数覆盖
+            params = defaults(params, sortData);
+        }
         proxy.params = params;
         // 数据源对象加载数据，调用预留函数，让子代理实现具体逻辑
         me.subLoad();
@@ -145,6 +155,27 @@ export default {
         // 标识当前为重载数据，预留扩展
         me.proxy.isReLoad = true;
         me.load(me.proxy.extraParams);
+    },
+    /**
+     * 排序
+     *
+     * @param {*} { field 排序字段, order 排序方式}
+     */
+    sort({ field, order }: any) {
+        const me = this as any, proxy = me.proxy, sortParam = {};
+        set(sortParam, proxy.sortParam, field);
+        set(sortParam, proxy.directionParam, order);
+        proxy.sortData = sortParam;
+        me.load(me.getParams());
+    },
+    /**
+     * 清除排序
+     *
+     */
+    clearSort() {
+        const me = this as any, proxy = me.proxy;
+        proxy.sortData = null;
+        me.load(me.getParams());
     },
     /**
      * 获取当前参数（排除分页参数）

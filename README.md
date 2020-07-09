@@ -10,7 +10,7 @@ npm install ux-data-proxy
 # 使用
 请求数据的方法与返回的数据需要遵循以下规则
 
-1. 此帮助类只是一个代理类，具体分页查询函数还是需要axios等扩展来实现，但是因为设计时考虑了扩展性，可以自定义一些扩展来实现请求数据的功能
+1. 此帮助类只是一个代理类，具体分页、查询、排序功能函数还是需要axios等扩展来实现，但是因为设计时考虑了扩展性，可以自定义一些扩展来实现请求数据的功能
 
 1. 返回数据必须是标准json格式数据，并且有以下字段，对应字段名称可以在reader配置中灵活配置，如果返回数据不标准可以用readerTransform函数处理成表格格式
 
@@ -474,18 +474,12 @@ const defaultStore = {
 const defaultProxy = {
     // 代理类型，默认为经典代理
     type: 'promise.classic',
-    // 每次加载几条数据，默认为10
-    pageSize: 10,
-    // 当前页码，默认为1
-    page: 1,
-    // 分页每页显示条数字段名称，默认为limit，此参数传递到服务端
-    limitParam: 'limit',
-    // 分页页码字段名称，默认为page，此参数传递到服务端
-    pageParam: 'page',
+    // 默认参数,默认参数会被相同名称新参数覆盖，此参数传递到请求数据函数
+    defaultParams: null,
     // 初始化后是否自动加载数据
     autoLoad: false,
     // 扩展 处理单个数据对象的函数
-    disposeItem: null,           
+    disposeItem: null,
     // 读取数据相关配置
     reader: {
         // 数据根节点名称
@@ -496,12 +490,24 @@ const defaultProxy = {
         totalProperty: "total",
         // 请求失败后失败消息节点名称
         messageProperty: 'message'
-    }
+    },
+    // 排序字段名称
+    sortParam: 'orderBy',
+    // 排序方式字段名称
+    directionParam: 'orderSort'
 };
 // promise.开头代理可用配置
 const defaultProxy = {
-    // 请求数据方法,必须
-    requestFun: null
+    // 每次加载几条数据，默认为10
+    pageSize: 10,
+    // 当前页码，默认为1
+    page: 1,
+    // 数据总数，禁止更改
+    total: 0,
+    // 分页每页显示条数字段名称，默认为limit，此参数传递到请求数据函数
+    limitParam: 'limit',
+    // 分页页码字段名称，默认为page，此参数传递到请求数据函数
+    pageParam: 'page'
 };
 // promise.classic代理可用配置
 const defaultProxy = {
@@ -548,12 +554,25 @@ const defaultProxy = {
     reLoad() {
     },
     /**
+     * 排序
+     *
+     * @param {*} { field 排序字段, order 排序方式}
+     */
+    sort({ field, order }: any) {
+    },
+    /**
+     * 清除排序
+     *
+     */
+    clearSort() {
+    },
+    /**
      * 获取当前参数（排除分页参数）
      *
      * @returns
      */
     getParams() {
-    },
+    }
 ```
 ## promise.classic 代理
 ```js
@@ -704,4 +723,4 @@ export default {
 - [x] 经典代理
 - [x] 移动端代理
 - [x] 本地数据代理
-- [] 本地数据代理，支持本地数据分页
+- [ ] 本地数据代理，支持本地数据分页

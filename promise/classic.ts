@@ -70,12 +70,12 @@ export default {
         me.loadByProxy();
     },
     /**
-     * 刷新数据源对象，用于修改/新增/删除后调用
+     * 刷新数据源对象，用于修改/新建/删除后调用
      * 修改后直接重载数据，页码不变
-     * 新增后直接重新加载数据，页码重置为1
+     * 新建后直接重新加载数据，页码重置为1
      * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
      *
-     * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
+     * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新建数据}={}]
      */
     refresh({ isDel = false, isAdd = false }: any = {}) {
         const me = this as any,
@@ -95,7 +95,7 @@ export default {
                 }
             }
         } else if (isAdd) {
-            // 新增后直接到第一页
+            // 新建后直接到第一页
             page = 1;
         }
         me.loadPage(page);
