@@ -146,6 +146,17 @@ export default {
         me.subLoad();
     },
     /**
+     * 设置默认参数并加载数据
+     *
+     * @param {*} params 默认参数
+     */
+    lodaByDefaultParams(params: any) {
+        const me = this as any;
+        // 设置默认参数再加载数据
+        me.proxy.defaultParams = params;
+        me.load();
+    },
+    /**
      * 数据源对象重载数据，promise.开头的代理页码会重置为1
      * promise.开头的代理页码会重置为1
      * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
