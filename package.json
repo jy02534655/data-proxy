@@ -1,6 +1,6 @@
 {
   "name": "ux-data-proxy",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "this is a vue data proxy",
   "main": "index.ts",
   "scripts": {
@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/jy02534655/data-proxy#readme",
   "devDependencies": {
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "lowdb": "^1.0.0"
   }
 }
