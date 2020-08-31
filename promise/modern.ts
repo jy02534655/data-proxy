@@ -12,7 +12,7 @@ export default {
             me.data = []
         }
         if (page !== 1 && me.data.length >= proxy.total) {
-            console.log('无更多数据,数据加载结束')
+            // console.log('无更多数据,数据加载结束')
             // 如果不是加载第一页,那么说明现在是上拉加载更多
             // 如果store的数据大于或者等于数据总数,说明没有更多数据了,无须请求服务端数据
             me.modernAfterReadData();
@@ -55,7 +55,7 @@ export default {
             }
             // 是否还有更多数据需要加载
             me.isFinished = isFinished;
-            console.log('isFinished', isFinished);
+            // console.log('isFinished', isFinished);
         }
         // 标识请求数据状态
         // 是否加载失败

@@ -18,7 +18,7 @@ export default {
         defaultsDeep(store.proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
-        console.log('proxy.promise.classic.init', store.proxy);
+        // console.log('proxy.promise.classic.init', store.proxy);
     },
     /**
      * 读取并处理数据

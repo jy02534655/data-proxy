@@ -28,7 +28,7 @@ export default {
         db.defaults({}).write();
         // 数据源对象绑定数据库对象
         store.db = db;
-        console.log('proxy.local.init', me.proxy);
+        // console.log('proxy.local.init', me.proxy);
     },
     /**
     * 数据源对象加载数据，页码重置为1

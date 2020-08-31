@@ -2,6 +2,7 @@
 import { mixin, set, isFunction, defaultsDeep } from "lodash";
 import classic from "./classic";
 import modern from "./modern";
+import memory from "./memory";
 // 默认配置参数
 const defaultProxy = {
     // 每次加载几条数据，默认为10
@@ -29,12 +30,17 @@ export default {
         defaultsDeep(proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
-        console.log('proxy.promise.init', proxy);
+        // console.log('proxy.promise.init', proxy);
         // 根据代理类型挂载代理对象
         // 默认挂载经典代理
         switch (proxy.type) {
             case 'modern':
                 mixin(store, modern);
+                break;
+            case 'memory':
+                // 在classic代理基础上扩展
+                classic.init(store);
+                memory.init(store);
                 break;
             default:
                 classic.init(store);
@@ -75,7 +81,7 @@ export default {
         const me = this as any,
             proxy = me.proxy;
         // 当前代理状态
-        console.log('proxy isLoading', proxy.isLoading);
+        // console.log('proxy isLoading', proxy.isLoading);
         // 如果正在请求数据，不做任何操作，过滤高频请求
         if (!proxy.isLoading) {
             // 标识正在请求数据
@@ -96,7 +102,7 @@ export default {
             }
             // 设置代理参数
             proxy.params = params;
-            console.log('extraParams', proxy.extraParams);
+            // console.log('extraParams', proxy.extraParams);
             // 读取并处理数据，调用预留函数，让子代理实现具体逻辑
             me.beforeReadData();
         }

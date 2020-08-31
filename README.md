@@ -450,6 +450,12 @@ export default class GridDemo extends Vue {
 ## local
 如果提供了读取数据函数，数据通过函数获取，如果没有则读取缓存数据，新数据会覆盖原有数据
 如果提供了保存数据函数，数据通过保存数据保存，如果没有则缓存数据，新数据会覆盖原有数据
+
+## promise.memory
+通过setData设置数据后，可以分页展示数据，并支持单字段排序
+用法同promise.classic,除load/lodaByDefaultParams/getParams方法其他方法皆可使用
+
+
 # 可用配置
 ```js
 // 数据源对象可用配置
@@ -524,6 +530,13 @@ const defaultProxy = {
     dbName: 'ux-local-data',
     // 本地存储路径，必填
     path: ''
+};
+// promise.memory代理可用配置
+// autoLoad 不可用
+// defaultParams 不可用
+// requestFun 不可用
+// 其他同promise.classic
+const defaultProxy = {
 };
 ```
 # 可用函数
@@ -635,6 +648,24 @@ const defaultProxy = {
     saveDataByDebounce(name: string, data: any, wait: number = 1000) {
     }
 ```
+## promise.memory 代理
+```js
+    /**
+     * 设置数据
+     *
+     * @param {*} data 数据
+     */
+    setData(pageSize: number) {
+    },
+    /**
+     * 设置数据并排序
+     *
+     * @param {*} data 数据
+     * @param {*} { field 排序字段, order 排序方式}
+     */
+    setDataAndSort(page: number) {
+    }
+```
 # 二次扩展
 ```js
 import proxy from "ux-data-proxy";
@@ -730,4 +761,7 @@ export default {
 - [x] 经典代理
 - [x] 移动端代理
 - [x] 本地数据代理
-- [ ] 本地数据代理，支持本地数据分页
+- [x] 内存代理
+    - [x] 指定数据后支持分页、单字段排序
+    - [ ] 数据搜索过滤
+    - [ ] 支持直接读取远程数据

@@ -62,7 +62,7 @@ export default {
      * @param {*} store,数据源对象
      */
     init(store: any) {
-        console.log('proxy.init');
+        // console.log('proxy.init');
         const me = this as any,
             // 代理配置
             proxy = store.proxy,
@@ -72,7 +72,7 @@ export default {
         defaultsDeep(proxy, defaultProxy);
         // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
         mixin(store, me);
-        console.log('proxy.init', proxy);
+        // console.log('proxy.init', proxy);
         // 设置下一级代理类型
         proxy.type = drop(key).toString();
         // 根据代理类型第一级挂载代理对象
@@ -98,9 +98,9 @@ export default {
      * @param {*} { res 请求失败结果数据集, isError = false 是否加载失败}
      */
     loadEnd({ res = {}, isError = false }: any = {}) {
-        console.log('loadEnd');
-        console.log('res:', res);
-        console.log('isError:', isError);
+        // console.log('loadEnd');
+        // console.log('res:', res);
+        // console.log('isError:', isError);
         const me = this as any;
         // 标识请求数据完成
         me.proxy.isLoading = false;
@@ -173,7 +173,9 @@ export default {
      * @param {*} { field 排序字段, order 排序方式}
      */
     sort({ field, order }: any) {
-        const me = this as any, proxy = me.proxy, sortParam = {};
+        const me = this as any,
+            proxy = me.proxy,
+            sortParam = {};
         set(sortParam, proxy.sortParam, field);
         set(sortParam, proxy.directionParam, order);
         proxy.sortData = sortParam;
