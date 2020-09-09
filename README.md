@@ -460,11 +460,15 @@ export default class GridDemo extends Vue {
 ```js
 // 数据源对象可用配置
 const defaultStore = {
-    // 扩展，请求失败后执行函数
+    // 扩展，请求失败后执行函数(res)
+    // res 请求失败结果数据集
     failure: null,
-    // 扩展，请求数据前处理请求参数函数
+    // 扩展，请求数据前处理请求参数函数(params, proxy)
+    // params 请求参数
+    // proxy 代理对象
     writerTransform: null,
-    // 扩展，请求数据成功后处理数据结果函数
+    // 扩展，请求数据成功后处理数据结果函数(res)
+    // res 未处理的结果数据集
     readerTransform: null
 }
 // promise.modern代理数据源对象可用状态
@@ -484,7 +488,9 @@ const defaultProxy = {
     defaultParams: null,
     // 初始化后是否自动加载数据
     autoLoad: false,
-    // 扩展 处理单个数据对象的函数
+    // 扩展 处理单个数据对象的函数(item,index)
+    // item 单条数据
+    // index 序号
     disposeItem: null,
     // 读取数据相关配置
     reader: {
@@ -513,7 +519,11 @@ const defaultProxy = {
     // 分页每页显示条数字段名称，默认为limit，此参数传递到请求数据函数
     limitParam: 'limit',
     // 分页页码字段名称，默认为page，此参数传递到请求数据函数
-    pageParam: 'page'
+    pageParam: 'page',
+    // 扩展，请求数据成功后回调函数(data,proxy)
+    // data 结果输数据集
+    // proxy 代理对象
+    loadSuccess: 
 };
 // promise.classic代理可用配置
 const defaultProxy = {

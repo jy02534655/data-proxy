@@ -49,7 +49,7 @@ export default {
     },
 
     /**
-     * 读取数据并做通用逻辑处理，由子代理实现具体细节
+     * 读取数据并做通用逻辑处理，提供给子代理使用
      *
      * @returns
      */
@@ -63,6 +63,7 @@ export default {
                 if (proxy.isReLoad) {
                     proxy.isReLoad = false;
                 }
+                proxy.loadSuccess && proxy.loadSuccess(data, proxy)
                 resolve({ data, total });
             }).catch((res: any) => {
                 // 数据加载结束
