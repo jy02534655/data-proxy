@@ -2,7 +2,7 @@
 
 这是一个数据代理扩展，灵感来至于ExtJs中的Ext.data.Store
 
-git地址:https://github.com/jy02534655/data-proxy
+git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy02534655/data-proxy)
 
 # 安装代理模块
 npm install ux-data-proxy
@@ -458,7 +458,7 @@ export default class GridDemo extends Vue {
 
 # 可用配置
 ```js
-// 数据源对象可用配置
+// promise.开头代理数据源对象可扩展配置
 const defaultStore = {
     // 扩展，请求失败后执行函数(res)
     // res 请求失败结果数据集
@@ -480,6 +480,7 @@ const defaultStore = {
     // 是否处于加载状态，可以修改
     isVanLoading: false
 }
+
 // 代理可用配置
 const defaultProxy = {
     // 代理类型，默认为经典代理
@@ -523,7 +524,20 @@ const defaultProxy = {
     // 扩展，请求数据成功后回调函数(data,proxy)
     // data 结果输数据集
     // proxy 代理对象
-    loadSuccess: 
+    loadSuccess: null,
+    // 扩展，请求失败后执行函数(res)
+    // res 请求失败结果数据集
+    // 此扩展会覆盖defaultStore中的配置
+    failure: null,
+    // 扩展，请求数据前处理请求参数函数(params, proxy)
+    // params 请求参数
+    // proxy 代理对象
+    // 此扩展会覆盖defaultStore中的配置
+    writerTransform: null,
+    // 扩展，请求数据成功后处理数据结果函数(res)
+    // res 未处理的结果数据集
+    // 此扩展会覆盖defaultStore中的配置
+    readerTransform: null
 };
 // promise.classic代理可用配置
 const defaultProxy = {
@@ -742,6 +756,7 @@ export default {
         // 如果设置了初始化自动加载，首次请求writerTransform不会触发
     },
     // 扩展，请求失败后执行函数
+    // 如果在代理中有相同扩展方法，会被覆盖
     failure(res: any) {
         const me = this as any;
         if (me.proxy.isErrorMessage) {
@@ -755,11 +770,13 @@ export default {
         }
     },
     // 扩展，请求数据成功后处理数据结果函数
+    // 如果在代理中有相同扩展方法，会被覆盖
     readerTransform(res: any) {
         console.log('readerTransform')
         return res;
     },
     // 扩展，请求数据前处理请求参数函数
+    // 如果在代理中有相同扩展方法，会被覆盖
     writerTransform(params: any) {
         console.log('writerTransform')
         return params;

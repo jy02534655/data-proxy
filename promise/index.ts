@@ -46,6 +46,18 @@ export default {
                 classic.init(store);
                 break;
         }
+        // 获取readerTransform配置
+        if (!proxy.readerTransform) {
+            proxy.readerTransform = store.readerTransform;
+        }
+        // 获取writerTransform配置
+        if (!proxy.writerTransform) {
+            proxy.writerTransform = store.writerTransform;
+        }
+        // 获取failure配置
+        if (!proxy.failure) {
+            proxy.failure = store.failure;
+        }
     },
 
     /**
@@ -90,16 +102,17 @@ export default {
             // 读取store配置
             const {
                 pageSize,
-                page
+                page,
+                writerTransform
             } = proxy;
             let { params = {}} = proxy;
             // 设置分页相关参数
             set(params, proxy.limitParam, pageSize);
             set(params, proxy.pageParam, page);
             // 如果有请求数据前处理请求参数函数，执行它
-            if (isFunction(me.writerTransform)) {
+            if (isFunction(writerTransform)) {
                 // 有时候需要在请求前处理参数
-                params = me.writerTransform(params, proxy);
+                params = writerTransform(params, proxy);
             }
             // 设置代理参数
             proxy.params = params;

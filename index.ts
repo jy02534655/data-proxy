@@ -106,13 +106,15 @@ export default {
         me.proxy.isLoading = false;
         // 如果数据加载失败
         if (isError) {
+            const failure = me.proxy.failure;
             // 如果有请求失败执行函数，执行它
-            if (isFunction(me.failure)) {
+            if (isFunction(failure)) {
                 // 有时候请求失败需要额外的处理逻辑
-                me.failure(res);
+                failure(res);
             }
         }
     },
+
     /**
      * 数据源对象加载数据
      * promise.开头的代理页码会重置为1
@@ -213,7 +215,7 @@ export default {
                }) message 提示
     */
     readData({
-        requestFun, params, disposeItem, reader
+        requestFun, params, disposeItem, reader, readerTransform
     }: any = {}) {
         return new Promise((resolve, reject) => {
             if (!requestFun) {
@@ -224,21 +226,20 @@ export default {
             } else {
                 // 通过代理函数获取数据
                 requestFun(params).then((res: any) => {
-                    const me = this as any,
-                        // 读取数据相关配置
-                        {
-                            // 数据根节点名称
-                            rootProperty,
-                            // 用于判断请求是否成功的节点名称
-                            successProperty,
-                            // 数据总数节点名称
-                            totalProperty,
-                            // 请求失败后失败消息节点名称
-                            messageProperty } = reader;
+                    // 读取数据相关配置
+                    const {
+                        // 数据根节点名称
+                        rootProperty,
+                        // 用于判断请求是否成功的节点名称
+                        successProperty,
+                        // 数据总数节点名称
+                        totalProperty,
+                        // 请求失败后失败消息节点名称
+                        messageProperty } = reader;
                     // 如果有请求数据成功后处理数据结果函数，执行它
-                    if (isFunction(me.readerTransform)) {
+                    if (isFunction(readerTransform)) {
                         // 有时候后端返回的数据可能并不符合规范，可以用这个扩展函数处理一下
-                        res = me.readerTransform(res);
+                        res = readerTransform(res);
                     }
                     // 获取请求数据结果状态
                     const success = get(res, successProperty);
