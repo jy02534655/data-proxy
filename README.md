@@ -458,7 +458,7 @@ export default class GridDemo extends Vue {
 
 # 可用配置
 ```js
-// promise.开头代理数据源对象可扩展配置
+// promise.开头代理预留方法
 const defaultStore = {
     // 扩展，请求失败后执行函数(res)
     // res 请求失败结果数据集
