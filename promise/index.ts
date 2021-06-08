@@ -69,15 +69,18 @@ export default {
         return new Promise((resolve, reject) => {
             const me = this as any,
                 proxy = me.proxy;
-            me.readData(proxy).then(({ data, total }: any) => {
+            me.readData(proxy).then((response: any) => {
+                const {
+                    total
+                } = response;
                 proxy.total = total;
                 // 如果当前标识为重载数据，重置标识状态为false，预留扩展
                 if (proxy.isReLoad) {
                     proxy.isReLoad = false;
                 }
-                proxy.loadSuccess && proxy.loadSuccess(data, proxy)
-                resolve({ data, total });
-            }).catch((res: any) => {
+                proxy.loadSuccess && proxy.loadSuccess(response, proxy);
+                resolve(response);
+            }).catch((res:any) => {
                 // 数据加载结束
                 reject({
                     isError: true,
@@ -105,7 +108,7 @@ export default {
                 page,
                 writerTransform
             } = proxy;
-            let { params = {}} = proxy;
+            let { params = {} } = proxy;
             // 设置分页相关参数
             set(params, proxy.limitParam, pageSize);
             set(params, proxy.pageParam, page);

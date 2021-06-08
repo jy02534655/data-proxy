@@ -1,4 +1,9 @@
-import { isEmpty, isNumber, pickBy } from "lodash";
+import {
+    isEmpty,
+    isNumber,
+    pickBy,
+    isBoolean
+} from "lodash";
 export default {
     /**
      * 判断是否为空对象，空字符串，null
@@ -7,17 +12,16 @@ export default {
      * @returns
      */
     isEmpty(v: any) {
-        if (isNumber(v)) {
-            // 只要是数字就不算空
+        if (isNumber(v) || isBoolean(v)) {
+            // 只要是数字和布尔类型就不算空
             return false;
         }
         return isEmpty(v);
     },
     // 清楚对象中空数据
     clearObject(o: any) {
-        const me = this as any;
         return pickBy(o, (item: any) => {
-            return !me.isEmpty(item);
+            return !this.isEmpty(item);
         });
     }
 }

@@ -1,7 +1,21 @@
 import promiseProxy from "./promise/index";
 import localProxy from "./local/index";
 import util from './utils/index'
-import { cloneDeep, isObjectLike, mixin, defaultsDeep, split, isFunction, drop, defaults, get, set, forEach } from "lodash";
+import {
+    cloneDeep,
+    isPlainObject,
+    mixin,
+    defaultsDeep,
+    split,
+    isFunction,
+    drop,
+    defaults,
+    get,
+    set,
+    forEach,
+    assign,
+    unset
+} from "lodash";
 
 // 数据源对象可用配置
 // const defaultStore = {
@@ -33,6 +47,8 @@ const defaultProxy = {
     disposeItem: null,
     // 读取数据相关配置
     reader: {
+        // 其他数据节点名称
+        otherProperty: "",
         // 数据根节点名称
         rootProperty: "data",
         // 判断请求是否成功的节点名称
@@ -45,7 +61,9 @@ const defaultProxy = {
     // 排序字段名称
     sortParam: 'orderBy',
     // 排序方式字段名称
-    directionParam: 'orderSort'
+    directionParam: 'orderSort',
+    // 发送请求时是否清除空数据
+    clearEmpty: true
 };
 // 这是一个数据代理
 // 俄罗斯套娃模式，支持向上向下扩展
@@ -126,20 +144,24 @@ export default {
         const me = this as any,
             proxy = me.proxy,
             // 获取默认参数
-            { defaultParams, sortData } = proxy;
+            { defaultParams, sortData,
+                clearEmpty } = proxy;
         if (params) {
             // 深度拷贝并处理掉空数据，避免数据变化引起bug
-            params = util.clearObject(cloneDeep(params));
+            params = cloneDeep(params);
+            if (clearEmpty) {
+                params = util.clearObject(params);
+            }
         }
         // 如果存在默认参数,则添加默认参数
-        if (isObjectLike(defaultParams)) {
+        if (isPlainObject(defaultParams)) {
             // 默认参数会被新参数覆盖
             params = defaults(params, defaultParams);
         }
         // 存储参数（排除分页参数与排序参数）
         proxy.extraParams = cloneDeep(params);
         // 如果存在排序参数,则添加排序参数
-        if (isObjectLike(sortData)) {
+        if (isPlainObject(sortData)) {
             // 默认参数会被新参数覆盖
             params = defaults(params, sortData);
         }
@@ -151,12 +173,44 @@ export default {
      * 设置默认参数并加载数据
      *
      * @param {*} params 默认参数
+     * @param {boolean} [isReLoad=false] 是否重载
      */
-    lodaByDefaultParams(params: any) {
+    lodaByDefaultParams(params: any, isReLoad: boolean = false) {
         const me = this as any;
         // 设置默认参数再加载数据
         me.proxy.defaultParams = params;
-        me.load();
+        isReLoad ? me.reLoad() : me.load();
+    },
+    /**
+     * 追加默认参数并加载数据
+     *
+     * @param {*} params 参数
+     * @param {boolean} [isReLoad=false] 是否重载
+     */
+    appendsDefaultParamsAndLoad(params: any, isReLoad: boolean = false) {
+        const me = this;
+        me.proxy.defaultParams = assign(me.proxy.defaultParams, params);
+        isReLoad ? me.reLoad() : me.load();
+    },
+    /**
+     * 移除指定参数(包括默认参数)并加载数据
+     *
+     * @param {*} list 待移除的字符串数组
+     * @param {boolean} [isReLoad=true] 是否重载
+     */
+    removeParamsAndReLoad(list:any, isReLoad: boolean = true) {
+        const me = this,
+            {
+                defaultParams,
+                extraParams
+            } = me.proxy;
+        list.forEach(item => {
+            // 移除默认参数
+            unset(defaultParams, item);
+            // 移除参数
+            unset(extraParams, item);
+        })
+        isReLoad ? me.reLoad() : me.load();
     },
     /**
      * 数据源对象重载数据，promise.开头的代理页码会重置为1
@@ -201,6 +255,14 @@ export default {
         return (this as any).proxy.extraParams;
     },
     /**
+     * 获取所有参数
+     *
+     * @returns
+     */
+    getAllparams() {
+        return (this).proxy.params;
+    },
+    /**
     *
     *
     * @param {*} {
@@ -228,6 +290,8 @@ export default {
                 requestFun(params).then((res: any) => {
                     // 读取数据相关配置
                     const {
+                        // 其他数据节点名称
+                        otherProperty,
                         // 数据根节点名称
                         rootProperty,
                         // 用于判断请求是否成功的节点名称
@@ -245,15 +309,22 @@ export default {
                     const success = get(res, successProperty);
                     if (success) {
                         // 获取数据
-                        const data = get(res, rootProperty),
+                        const data = get(res, rootProperty) || [],
                             // 获取数据总数，如果后端没有返回数据总数，默认为当前请求的数据总数
-                            total = get(res, totalProperty) || data.length;
+                            total = get(res, totalProperty, data.length);
                         // 如果有遍历单条数据的函数，那么遍历处理数据
                         if (isFunction(disposeItem)) {
                             forEach(data, disposeItem);
                         }
+                        const response:any = {
+                            data,
+                            total
+                        }
+                        if (otherProperty) {
+                            response.other = get(res, otherProperty)
+                        }
                         // 成功回调
-                        resolve({ data, total });
+                        resolve(response);
                     } else {
                         // 失败回调
                         reject({

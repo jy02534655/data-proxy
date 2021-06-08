@@ -23,7 +23,7 @@ export default {
                 me.modernLoadEnd();
             }).catch((res: any) => {
                 // 数据加载结束
-                me.modernAfterReadData(res)
+                me.modernAfterReadData(res);
             })
         }
     },
@@ -36,7 +36,7 @@ export default {
         // 如果正在加载，终止
         if (page && !proxy.isLoading) {
             proxy.page = page + 1
-            me.loadByProxy()
+            me.loadByProxy();
         }
     },
     /**

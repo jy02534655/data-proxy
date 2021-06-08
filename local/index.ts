@@ -87,7 +87,7 @@ export default {
             // 检查是否有防抖函数，没有则创建一个
             debounceFun = me.debounceFun = debounce(function() {
                 me.saveData();
-            }, wait)
+            }, wait);
         }
         debounceFun();
     }

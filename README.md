@@ -4,6 +4,27 @@
 
 git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy02534655/data-proxy)
 
+# 更新日志
+
+## [1.1.4] - 2021-06-08
+
+### 变更
+
+* `lodaByDefaultParams` 方法新增参数
+
+### 新增
+
+* 新增 `reader.otherProperty` 配置
+* 新增 `clearEmpty` 配置
+* 新增 `appendsDefaultParamsAndLoad`方法
+* 新增 `removeParamsAndReLoad`方法
+* 新增 `getAllparams`方法
+
+### 优化
+
+* 优化帮助类 `isEmpty` 方法
+
+
 # 安装代理模块
 npm install ux-data-proxy
 
@@ -439,6 +460,7 @@ export default class GridDemo extends Vue {
 }
 </script>
 ```
+
 # 可用代理
 
 ## promise.classic
@@ -495,6 +517,8 @@ const defaultProxy = {
     disposeItem: null,
     // 读取数据相关配置
     reader: {
+        // 其他数据节点名称
+        otherProperty: "",
         // 数据根节点名称
         rootProperty: "data",
         // 判断请求是否成功的节点名称
@@ -507,7 +531,9 @@ const defaultProxy = {
     // 排序字段名称
     sortParam: 'orderBy',
     // 排序方式字段名称
-    directionParam: 'orderSort'
+    directionParam: 'orderSort',
+    // 发送请求时是否清除空数据
+    clearEmpty: true
 };
 // promise.开头代理可用配置
 const defaultProxy = {
@@ -586,8 +612,26 @@ const defaultProxy = {
      * 设置默认参数并加载数据
      *
      * @param {*} params 默认参数
+     * @param {boolean} [isReLoad=false] 是否重载
      */
-    lodaByDefaultParams(params: any) {
+    lodaByDefaultParams(params: any, isReLoad: boolean = false) {
+    
+    },
+    /**
+     * 追加默认参数并加载数据
+     *
+     * @param {*} params 参数
+     * @param {boolean} [isReLoad=false] 是否重载
+     */
+    appendsDefaultParamsAndLoad(params: any, isReLoad: boolean = false) {
+    },
+    /**
+     * 移除指定参数(包括默认参数)并加载数据
+     *
+     * @param {*} list 待移除的字符串数组
+     * @param {boolean} [isReLoad=true] 是否重载
+     */
+    removeParamsAndReLoad(list:any, isReLoad: boolean = true) {
     },
     /**
      * 数据源对象重载数据
@@ -616,6 +660,13 @@ const defaultProxy = {
      * @returns
      */
     getParams() {
+    },
+    /**
+     * 获取所有参数
+     *
+     * @returns
+     */
+    getAllparams() {
     }
 ```
 ## promise.classic 代理

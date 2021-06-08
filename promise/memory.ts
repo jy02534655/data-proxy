@@ -30,7 +30,7 @@ export default {
                     const field = get(sortData, proxy.sortParam);
                     if (field) {
                         // 排序方式
-                        const order = get(sortData, proxy.directionParam)
+                        const order = get(sortData, proxy.directionParam);
                         // 重设数据源
                         store.memoryData = memoryData = orderBy(memoryData, field, order);
                     }
@@ -45,7 +45,7 @@ export default {
                 // 结果总数字段
                 set(result, totalProperty, memoryData.length);
                 // 返回数据
-                resolve(result)
+                resolve(result);
             });
         }
     },
