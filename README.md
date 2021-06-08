@@ -11,6 +11,7 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 ### 变更
 
 * `lodaByDefaultParams` 方法新增参数
+* 变更 `lodash` 依赖版本
 
 ### 新增
 
@@ -23,7 +24,6 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 ### 优化
 
 * 优化帮助类 `isEmpty` 方法
-
 
 # 安装代理模块
 npm install ux-data-proxy
