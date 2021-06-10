@@ -80,7 +80,7 @@ export default {
                 }
                 proxy.loadSuccess && proxy.loadSuccess(response, proxy);
                 resolve(response);
-            }).catch((res:any) => {
+            }).catch((res: any) => {
                 // 数据加载结束
                 reject({
                     isError: true,
@@ -106,12 +106,15 @@ export default {
             const {
                 pageSize,
                 page,
-                writerTransform
+                writerTransform,
+                clearPageParams
             } = proxy;
             let { params = {} } = proxy;
-            // 设置分页相关参数
-            set(params, proxy.limitParam, pageSize);
-            set(params, proxy.pageParam, page);
+            if (!clearPageParams) {
+                // 设置分页相关参数
+                set(params, proxy.limitParam, pageSize);
+                set(params, proxy.pageParam, page);
+            }
             // 如果有请求数据前处理请求参数函数，执行它
             if (isFunction(writerTransform)) {
                 // 有时候需要在请求前处理参数

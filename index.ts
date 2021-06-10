@@ -63,7 +63,9 @@ const defaultProxy = {
     // 排序方式字段名称
     directionParam: 'orderSort',
     // 发送请求时是否清除空数据
-    clearEmpty: true
+    clearEmptyParams: true,
+    // 发送请求时是否不发送分页参数
+    clearPageParams:false
 };
 // 这是一个数据代理
 // 俄罗斯套娃模式，支持向上向下扩展
@@ -145,11 +147,11 @@ export default {
             proxy = me.proxy,
             // 获取默认参数
             { defaultParams, sortData,
-                clearEmpty } = proxy;
+                clearPageParams } = proxy;
         if (params) {
             // 深度拷贝并处理掉空数据，避免数据变化引起bug
             params = cloneDeep(params);
-            if (clearEmpty) {
+            if (clearPageParams) {
                 params = util.clearObject(params);
             }
         }
@@ -198,7 +200,7 @@ export default {
      * @param {*} list 待移除的字符串数组
      * @param {boolean} [isReLoad=true] 是否重载
      */
-    removeParamsAndReLoad(list:any, isReLoad: boolean = true) {
+    removeParamsAndReLoad(list: any, isReLoad: boolean = true) {
         const me = this,
             {
                 defaultParams,
@@ -316,7 +318,7 @@ export default {
                         if (isFunction(disposeItem)) {
                             forEach(data, disposeItem);
                         }
-                        const response:any = {
+                        const response: any = {
                             data,
                             total
                         }

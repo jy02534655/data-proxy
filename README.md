@@ -6,6 +6,16 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 
 # 更新日志
 
+## [1.1.5] - 2021-06-10
+
+### 变更
+
+* promise.开头代理`clearEmpty` 配置改为 `clearPageParams`
+
+### 新增
+
+* promise.开头代理新增新增 `clearPageParams` 配置
+
 ## [1.1.4] - 2021-06-08
 
 ### 变更
@@ -16,7 +26,7 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 ### 新增
 
 * 新增 `reader.otherProperty` 配置
-* 新增 `clearEmpty` 配置
+* promise.开头代理新增 `clearEmpty` 配置
 * 新增 `appendsDefaultParamsAndLoad`方法
 * 新增 `removeParamsAndReLoad`方法
 * 新增 `getAllparams`方法
@@ -531,9 +541,7 @@ const defaultProxy = {
     // 排序字段名称
     sortParam: 'orderBy',
     // 排序方式字段名称
-    directionParam: 'orderSort',
-    // 发送请求时是否清除空数据
-    clearEmpty: true
+    directionParam: 'orderSort'
 };
 // promise.开头代理可用配置
 const defaultProxy = {
@@ -563,7 +571,11 @@ const defaultProxy = {
     // 扩展，请求数据成功后处理数据结果函数(res)
     // res 未处理的结果数据集
     // 此扩展会覆盖defaultStore中的配置
-    readerTransform: null
+    readerTransform: null,
+    // 发送请求时是否清除空数据
+    clearEmptyParams: true,
+    // 发送请求时是否不发送分页参数
+    clearPageParams:false
 };
 // promise.classic代理可用配置
 const defaultProxy = {
@@ -589,7 +601,9 @@ const defaultProxy = {
 const defaultProxy = {
 };
 ```
+
 # 可用函数
+
 ## 通用函数
 ```js
     /**
@@ -669,6 +683,7 @@ const defaultProxy = {
     getAllparams() {
     }
 ```
+
 ## promise.classic 代理
 ```js
     /**
@@ -696,6 +711,7 @@ const defaultProxy = {
     refresh({ isDel = false, isAdd = false } = {}) {
     }
 ```
+
 ## promise.modern 代理
 ```js
     /**
@@ -705,6 +721,8 @@ const defaultProxy = {
     loadNext() {
     }
 ```
+
+
 ## local 代理
 ```js
     /**
@@ -723,6 +741,7 @@ const defaultProxy = {
     saveDataByDebounce(name: string, data: any, wait: number = 1000) {
     }
 ```
+
 ## promise.memory 代理
 ```js
     /**
@@ -741,6 +760,7 @@ const defaultProxy = {
     setDataAndSort(page: number) {
     }
 ```
+
 # 二次扩展
 ```js
 import proxy from "ux-data-proxy";
