@@ -14,7 +14,8 @@ import {
     set,
     forEach,
     assign,
-    unset
+    unset,
+    PropertyPath
 } from "lodash";
 
 // 数据源对象可用配置
@@ -65,7 +66,7 @@ const defaultProxy = {
     // 发送请求时是否清除空数据
     clearEmptyParams: true,
     // 发送请求时是否不发送分页参数
-    clearPageParams:false
+    clearPageParams: false
 };
 // 这是一个数据代理
 // 俄罗斯套娃模式，支持向上向下扩展
@@ -190,7 +191,7 @@ export default {
      * @param {boolean} [isReLoad=false] 是否重载
      */
     appendsDefaultParamsAndLoad(params: any, isReLoad: boolean = false) {
-        const me = this;
+        const me = this as any;
         me.proxy.defaultParams = assign(me.proxy.defaultParams, params);
         isReLoad ? me.reLoad() : me.load();
     },
@@ -205,8 +206,8 @@ export default {
             {
                 defaultParams,
                 extraParams
-            } = me.proxy;
-        list.forEach(item => {
+            }: any = me.proxy;
+        list.forEach((item: any) => {
             // 移除默认参数
             unset(defaultParams, item);
             // 移除参数
@@ -262,7 +263,7 @@ export default {
      * @returns
      */
     getAllparams() {
-        return (this).proxy.params;
+        return (this as any).proxy.params;
     },
     /**
     *

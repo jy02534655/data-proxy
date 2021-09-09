@@ -6,6 +6,13 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 
 # 更新日志
 
+## [1.1.6] - 2021-06-18
+
+### 新增
+
+* promise.开头代理新增 `beforLoad` 扩展方法
+
+
 ## [1.1.5] - 2021-06-10
 
 ### 变更
@@ -14,7 +21,7 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 
 ### 新增
 
-* promise.开头代理新增新增 `clearPageParams` 配置
+* promise.开头代理新增 `clearPageParams` 配置
 
 ## [1.1.4] - 2021-06-08
 
@@ -555,6 +562,9 @@ const defaultProxy = {
     limitParam: 'limit',
     // 分页页码字段名称，默认为page，此参数传递到请求数据函数
     pageParam: 'page',
+    // 扩展，请求数据前处理函数(proxy)
+    // proxy 代理对象
+    beforLoad : null,
     // 扩展，请求数据成功后回调函数(data,proxy)
     // data 结果输数据集
     // proxy 代理对象

@@ -1,33 +1,36 @@
 {
-  "name": "ux-data-proxy",
-  "version": "1.1.5",
-  "description": "this is a vue data proxy",
-  "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jy02534655/data-proxy.git"
-  },
-  "keywords": [
-    "data",
-    "proxy",
-    "vue"
-  ],
-  "author": "魔狼再世",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jy02534655/data-proxy/issues"
-  },
-  "homepage": "https://github.com/jy02534655/data-proxy#readme",
-  "devDependencies": {
-    "@types/lodash": "^4.14.170",
-    "@types/lowdb": "^1.0.10",
-    "typescript": "^3.9.7"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21",
-    "lowdb": "^1.0.0"
-  }
+    "name": "ux-data-proxy",
+    "version": "1.1.6",
+    "description": "this is a vue data proxy",
+    "main": "index.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jy02534655/data-proxy.git"
+    },
+    "keywords": [
+        "data",
+        "proxy",
+        "vue"
+    ],
+    "author": "魔狼再世",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jy02534655/data-proxy/issues"
+    },
+    "homepage": "https://github.com/jy02534655/data-proxy#readme",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.18.0",
+        "@typescript-eslint/parser": "^4.18.0",
+        "eslint": "^6.8.0",
+        "@types/lodash": "^4.14.170",
+        "@types/lowdb": "^1.0.10",
+        "typescript": "^3.9.7"
+    },
+    "dependencies": {
+        "lodash": "^4.17.21",
+        "lowdb": "^1.0.0"
+    }
 }

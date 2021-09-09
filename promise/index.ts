@@ -107,8 +107,10 @@ export default {
                 pageSize,
                 page,
                 writerTransform,
-                clearPageParams
+                clearPageParams,
+                beforLoad
             } = proxy;
+            beforLoad && beforLoad(proxy);
             let { params = {} } = proxy;
             if (!clearPageParams) {
                 // 设置分页相关参数

@@ -34,7 +34,6 @@ export default {
                         // 重设数据源
                         store.memoryData = memoryData = orderBy(memoryData, field, order);
                     }
-
                 }
                 // 返回数据
                 const result = {};
