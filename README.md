@@ -6,6 +6,10 @@ git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy025346
 
 # 更新日志
 
+## [1.1.8] - 2021-09-09
+
+* eslint校验调整
+
 ## [1.1.6] - 2021-06-18
 
 ### 新增

@@ -202,11 +202,11 @@ export default {
      * @param {boolean} [isReLoad=true] 是否重载
      */
     removeParamsAndReLoad(list: any, isReLoad: boolean = true) {
-        const me = this,
+        const me = this as any,
             {
                 defaultParams,
                 extraParams
-            }: any = me.proxy;
+            } = me.proxy;
         list.forEach((item: any) => {
             // 移除默认参数
             unset(defaultParams, item);
