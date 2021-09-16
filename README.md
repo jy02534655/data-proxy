@@ -5,6 +5,9 @@
 git地址:[https://github.com/jy02534655/data-proxy](https://github.com/jy02534655/data-proxy)
 
 # 更新日志
+## [1.1.9] - 2021-09-16
+
+*修复clearEmptyParams配置失效bug
 
 ## [1.1.8] - 2021-09-09
 
