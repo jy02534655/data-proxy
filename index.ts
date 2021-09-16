@@ -15,7 +15,6 @@ import {
     forEach,
     assign,
     unset,
-    PropertyPath
 } from "lodash";
 
 // 数据源对象可用配置
@@ -148,11 +147,11 @@ export default {
             proxy = me.proxy,
             // 获取默认参数
             { defaultParams, sortData,
-                clearPageParams } = proxy;
+                clearEmptyParams } = proxy;
         if (params) {
             // 深度拷贝并处理掉空数据，避免数据变化引起bug
             params = cloneDeep(params);
-            if (clearPageParams) {
+            if (clearEmptyParams) {
                 params = util.clearObject(params);
             }
         }
