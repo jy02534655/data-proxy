@@ -14,7 +14,7 @@ import {
     set,
     forEach,
     assign,
-    unset,
+    unset
 } from "lodash";
 
 // 数据源对象可用配置
