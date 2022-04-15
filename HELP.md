@@ -29,4 +29,4 @@ npm login
 npm publish
 
 ::npm源切回淘宝
-npm config set registry https://registry.npm.taobao.org
+npm config set registry https://registry.npmmirror.com
