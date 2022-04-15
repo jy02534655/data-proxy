@@ -2,6 +2,59 @@
 
 这是一个数据代理扩展，灵感来至于 ExtJs 中的 Ext.data.Store
 
+# 更新日志
+## [1.2.2] - 2022-04-15
+*放弃ts使用
+*调整内部方法名称
+*内存代理增强，支持直接请求数据
+
+## [1.2.1] - 2021-09-16
+
+*修复clearEmptyParams配置失效bug
+
+## [1.1.8] - 2021-09-09
+
+* eslint校验调整
+
+## [1.1.6] - 2021-06-18
+
+### 新增
+
+* promise.开头代理新增 `beforLoad` 扩展方法
+
+
+## [1.1.5] - 2021-06-10
+
+### 变更
+
+* promise.开头代理`clearEmpty` 配置改为 `clearPageParams`
+
+### 新增
+
+* promise.开头代理新增 `clearPageParams` 配置
+
+## [1.1.4] - 2021-06-08
+
+### 变更
+
+* `lodaByDefaultParams` 方法新增参数
+* 变更 `lodash` 依赖版本
+
+### 新增
+
+* 新增 `reader.otherProperty` 配置
+* promise.开头代理新增 `clearEmpty` 配置
+* 新增 `appendsDefaultParamsAndLoad`方法
+* 新增 `removeParamsAndReLoad`方法
+* 新增 `getAllparams`方法
+
+### 优化
+
+* 优化帮助类 `isEmpty` 方法
+
+# 安装代理模块
+npm install ux-data-proxy
+
 ## 使用
 
 请求数据的方法与返回的数据需要遵循以下规则
