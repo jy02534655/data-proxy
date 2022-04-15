@@ -75,7 +75,7 @@ export default {
    * @description 请求数据并做通用逻辑处理，提供给子代理使用
    * @return {Promise}
    */
-  async readDataEnd() {
+  readDataEnd() {
     const me = this,
       proxy = me.proxy;
     // 请求数据
@@ -119,7 +119,7 @@ export default {
       const { pageSize, page, writerTransform, clearPageParams, beforLoad } =
         proxy;
       beforLoad && beforLoad(proxy);
-      let { params = {} } = proxy;
+      let { params = {}} = proxy;
       if (!clearPageParams) {
         // 设置分页相关参数
         set(params, proxy.limitParam, pageSize);

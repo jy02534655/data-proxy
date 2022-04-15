@@ -253,13 +253,7 @@ export default {
                  message: '您的网络不佳,请检查您的网络'
              }) message 提示
   */
-  async readData({
-    requestFun,
-    params,
-    disposeItem,
-    reader,
-    readerTransform
-  } = {}) {
+  readData({ requestFun, params, disposeItem, reader, readerTransform } = {}) {
     if (!requestFun) {
       console.error('requestFun未配置');
       // 失败回调
