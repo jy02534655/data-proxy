@@ -57,7 +57,7 @@ export default {
       // 判断是否需要加载更多数据
       let isFinished = false;
       // console.log(me.data.length, me.proxy.total)
-      if (me.data.length >= me.proxy.total) {
+      if (me.proxy.total && me.data.length >= me.proxy.total) {
         isFinished = true;
       }
       // 是否还有更多数据需要加载
@@ -67,10 +67,6 @@ export default {
     // 标识请求数据状态
     // 是否加载失败
     me.isError = isError;
-    // console.log('isVanLoading', me.isVanLoading);
-    // 是否处于加载状态
-    me.isVanLoading = false;
-    // console.log('isVanLoading', me.isVanLoading);
     // 调用总代理数据加载结束函数
     me.loadEnd({ res, isError });
   }

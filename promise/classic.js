@@ -51,33 +51,35 @@ export default {
     me.loadByProxy();
   },
   /**
-   * 刷新数据源对象，用于修改/新增/删除后调用
-   * 修改后直接重载数据，页码不变
+   * 刷新数据源对象，用于编辑/删除后调用
+   * 编辑后直接重载数据，页码不变
    * 新增后直接重新加载数据，页码重置为1
    * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
+   * @param {*} [{
+   *  state = 1, 1编辑/2删除
    *
-   * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
+   *  delCount = 1 删除了几条数据
+   * }={}]
    */
-  refresh({ isDel = false, isAdd = false } = {}) {
+  refresh({ state = 1, delCount = 1 } = {}) {
     const me = this,
       proxy = me.proxy;
     // 获取当前页码
     let page = proxy.page;
-    if (isDel) {
+    if (state == 2) {
       // 如果是删除并且页码大于1
       if (page > 1) {
         // 获取删除后当前数据总数
-        const count = me.proxy.total - 1,
+        const count = me.proxy.total - delCount,
           // 获取当前每页数据数
           pageSize = proxy.pageSize;
         // 如果删除后当前页面无数据，页码减1
         if ((page - 1) * pageSize >= count) {
           page--;
+          // 页码最小为1
+          page = page < 1 ? 1 : page;
         }
       }
-    } else if (isAdd) {
-      // 新增后直接到第一页
-      page = 1;
     }
     me.loadPage(page);
   }

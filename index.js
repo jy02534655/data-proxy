@@ -104,6 +104,7 @@ export default {
       { defaultParams, sortData, clearEmptyParams } = proxy;
     if (params) {
       // 深度拷贝并处理掉空数据，避免数据变化引起bug
+      // 如果是点击事件抛出的参数，cloneDeep处理后会变为{}
       params = cloneDeep(params);
       if (clearEmptyParams) {
         params = clearObject(params);
@@ -129,8 +130,6 @@ export default {
   /**
    * 数据源对象重载数据(参数不会发生变化)
    *
-   * promise.开头的代理页码会重置为1
-   *
    * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
    */
   reLoad() {
@@ -145,7 +144,7 @@ export default {
    * @param {boolean} isReLoad 是否重载
    * @param {boolean} isAppends 是否追加默认参数
    */
-  lodaByDefaultParams(params, { isReLoad = false, isAppends = false }) {
+  lodaByDefaultParams(params, { isReLoad = false, isAppends = false } = {}) {
     const me = this;
     // 设置默认参数
     me.proxy.defaultParams = isAppends
@@ -219,10 +218,11 @@ export default {
         failure(me, res);
       }
     }
+    me.end && me.end(me);
   },
 
   /**
-   * 获取当前参数（排除分页参数）
+   * 获取当前参数（排除分页、排序参数）
    *
    * @returns
    */
@@ -253,7 +253,13 @@ export default {
                  message: '您的网络不佳,请检查您的网络'
              }) message 提示
   */
-  readData({ requestFun, params, disposeItem, reader, readerTransform } = {}) {
+  async readData({
+    requestFun,
+    params,
+    disposeItem,
+    reader,
+    readerTransform
+  } = {}) {
     if (!requestFun) {
       console.error('requestFun未配置');
       // 失败回调

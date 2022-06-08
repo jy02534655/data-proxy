@@ -1,8 +1,22 @@
 # 说明
 
-这是一个数据代理扩展，灵感来至于 ExtJs 中的 Ext.data.Store
+这是一个数据代理扩展，灵感来至于 ExtJs 中的 `Ext.data.Store`
 
 # 更新日志
+
+## [1.2.3] - 2022-06-08
+
+### 变更
+
+*loadSuccess回调变更为success
+
+*refresh方法只支持编辑/删除操作，并变更参数
+
+### 优化
+
+*内存代理增强，新增自定义过滤方法
+*新增end回调
+
 ## [1.2.2] - 2022-04-15
 
 ### 变更
@@ -27,18 +41,17 @@
 
 ### 新增
 
-* promise.开头代理新增 `beforLoad` 扩展方法
-
+* promise. 开头代理新增 `beforLoad` 扩展方法
 
 ## [1.1.5] - 2021-06-10
 
 ### 变更
 
-* promise.开头代理`clearEmpty` 配置改为 `clearPageParams`
+* promise. 开头代理`clearEmpty` 配置改为 `clearPageParams`
 
 ### 新增
 
-* promise.开头代理新增 `clearPageParams` 配置
+* promise. 开头代理新增 `clearPageParams` 配置
 
 ## [1.1.4] - 2021-06-08
 
@@ -50,7 +63,7 @@
 ### 新增
 
 * 新增 `reader.otherProperty` 配置
-* promise.开头代理新增 `clearEmpty` 配置
+* promise. 开头代理新增 `clearEmpty` 配置
 * 新增 `appendsDefaultParamsAndLoad`方法
 * 新增 `removeParamsAndReLoad`方法
 * 新增 `getAllparams`方法
@@ -58,8 +71,8 @@
 ### 优化
 
 * 优化帮助类 `isEmpty` 方法
-
 # 安装代理模块
+
 npm install ux-data-proxy
 
 ## 使用
@@ -79,20 +92,20 @@ npm install ux-data-proxy
 
 ```js
 {
-    "code": 1,
-    "msg": "查询成功",
-    "data": {
-        "records": [{
-            "id": 119,
-            "name": "的鹅鹅鹅饿鹅",
-            "telephone": "18888888888"
-        }, {
-            "id": 118,
-            "name": "未命名",
-            "telephone": "18899999999"
-        }],
-        "total": 62
-    }
+  "code": 1,
+  "msg": "查询成功",
+  "data": {
+    "records": [{
+      "id": 119,
+      "name": "的鹅鹅鹅饿鹅",
+      "telephone": "18888888888"
+    }, {
+      "id": 118,
+      "name": "未命名",
+      "telephone": "18899999999"
+    }],
+    "total": 62
+  }
 }
 ```
 
@@ -100,11 +113,11 @@ npm install ux-data-proxy
 
 ```js
     reader: {
-        // 数据根节点
-        rootProperty: "data.data.records",
-        successProperty: "data.code",
-        totalProperty: "data.data.total",
-        messageProperty: 'data.data.msg'
+      // 数据根节点
+      rootProperty: "data.data.records",
+      successProperty: "data.code",
+      totalProperty: "data.data.total",
+      messageProperty: 'data.data.msg'
     }
 ```
 
@@ -112,99 +125,95 @@ npm install ux-data-proxy
 
 vue 代码如下（ts 写法）
 
-```js
+```html
 <template>
+  <div>
     <div>
-        <div>
-            <!-- 省略查询html代码 -->
-        </div>
-        <el-table
-            :data="tableList.data"
-        >
-            <!-- 省略代码 -->
-        </el-table>
-        <el-pagination
-            @size-change="onSizeChange"
-            @current-change="onCurrentChange"
-            :current-page="tableList.proxy.page"
-            :page-sizes="[5, 10, 20 ,30]"
-            :page-size="tableList.proxy.pageSize"
-            :total="tableList.proxy.total"
-            layout="total, sizes, prev, pager, next, jumper"
-        ></el-pagination>
+      <!--省略查询html代码-->
     </div>
+    <el-table: data="tableList.data">
+      <!--省略代码-->
+      </el-table>
+      <el-pagination @size - change="onSizeChange" @current - change="onCurrentChange" : current - page="tableList.proxy.page" : page - sizes="[5, 10, 20 ,30]" : page - size="tableList.proxy.pageSize" : total="tableList.proxy.total" layout="total, sizes, prev, pager, next, jumper">
+      </el-pagination>
+  </div>
 </template>
 <script lang='ts'>
-import { Component, Vue } from "vue-property-decorator";
-import { Action } from "vuex-class";
-import proxy from "ux-data-proxy";
-@Component({
+  import {
+    Component,
+    Vue
+  } from "vue-property-decorator";
+  import {
+    Action
+  } from "vuex-class";
+  import proxy from "ux-data-proxy";
+  @Component({
     name: "GridDemo"
-})
-export default class GridDemo extends Vue {
+  })
+  export default class GridDemo extends Vue {
     // 定义在vuex中的请求数据方法，只要返回的是Promise类型即可
     @Action("list") gridList;
     // 预留配置-列表配置
     // 列表代理对象
     tableList = {
-        // 列表数据源
-        data: [],
-        // 代理配置
-        proxy: {
-            // 请求数据方法
-            requestFun: this.gridList,
-            // 分页每页显示条数字段名称，默认为limit，此参数传递到服务端
-            limitParam: "pageSize",
-            // 分页页码字段名称，默认为page，此参数传递到服务端
-            pageParam: "current",
-            // 初始化后自动加载数据
-            autoLoad: true,
-            // autoLoad自动加载时默认参数
-            // params:{},
-            // 读取数据相关配置
-            reader: {
-                // 数据根节点
-                rootProperty: "data.data.records",
-                successProperty: "data.code",
-                totalProperty: "data.data.total",
-                messageProperty: "data.data.msg"
-            }
+      // 列表数据源
+      data: [],
+      // 代理配置
+      proxy: {
+        // 请求数据方法
+        requestFun: this.gridList,
+        // 分页每页显示条数字段名称，默认为limit，此参数传递到服务端
+        limitParam: "pageSize",
+        // 分页页码字段名称，默认为page，此参数传递到服务端
+        pageParam: "current",
+        // 初始化后自动加载数据
+        autoLoad: true,
+        // autoLoad自动加载时默认参数
+        // params:{},
+        // 读取数据相关配置
+        reader: {
+          // 数据根节点
+          rootProperty: "data.data.records",
+          successProperty: "data.code",
+          totalProperty: "data.data.total",
+          messageProperty: "data.data.msg"
         }
+      }
     };
 
     created() {
-        // 初始化数据代理对象
-        proxy.init(this.tableList);
+      // 初始化数据代理对象
+      proxy.init(this.tableList);
     }
 
     // 每页显示数量变化
     onSizeChange(pageSize: number) {
-        this.proxySizeChange(pageSize);
+      this.proxySizeChange(pageSize);
     }
 
     // 页码发生变化
     onCurrentChange(page: number) {
-        this.proxyCurrentChange(page);
+      this.proxyCurrentChange(page);
     }
 
     //根据条件查询
     proxyQuery(params, tabName = "tableList") {
-        // console.log("onSizeChange", pageSize);
-        this[tabName].load(params);
+      // console.log("onSizeChange", pageSize);
+      this[tabName].load(params);
     }
 
     //每页显示数量变化
     proxySizeChange(pageSize: number, tabName = "tableList") {
-        // console.log("onSizeChange", pageSize);
-        this[tabName].loadPageSize(pageSize);
+      // console.log("onSizeChange", pageSize);
+      this[tabName].loadPageSize(pageSize);
     }
 
     // 页码发生变化
     proxyCurrentChange(page: number, tabName = "tableList") {
-        // console.log("onCurrentChange", page);
-        this[tabName].loadPage(page);
+      // console.log("onCurrentChange", page);
+      this[tabName].loadPage(page);
     }
-}
+  }
 </script>
 ```
 
@@ -292,11 +301,14 @@ const defaultProxy = {
   // 扩展，请求数据前处理函数(proxy)
   // proxy 代理对象
   beforLoad: null,
-  // 扩展，请求数据成功后回调函数(data,proxy)
+  // 扩展，请求数据成功后回调函数(data,proxy,store)
   // data 结果输数据集
   // proxy 代理对象
-  loadSuccess: null,
-  // 扩展，请求失败后执行函数(res)
+  success: null,
+  // 扩展，请求数据结束后回调函数(store)
+  // proxy 代理对象
+  end: null,
+  // 扩展，请求失败后执行函数(store,res)
   // res 请求失败结果数据集
   // 此扩展会覆盖defaultStore中的配置
   failure: null,
@@ -333,82 +345,76 @@ const defaultProxy = {
    *
    * @param {*} store,数据源对象
    */
-  init(store) {
-  },
+  init(store) {},
 
-  /**
-   * 数据源对象加载数据
-   *
-   * promise.开头的代理页码会重置为1
-   *
-   * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
-   *
-   * @param {object} params 查询参数
-   */
-  load(params) {
-  },
+    /**
+     * 数据源对象加载数据
+     *
+     * promise.开头的代理页码会重置为1
+     *
+     * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
+     *
+     * @param {object} params 查询参数
+     */
+    load(params) {},
 
-  /**
-   * 数据源对象重载数据(参数不会发生变化)
-   *
-   * promise.开头的代理页码会重置为1
-   *
-   * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
-   */
-  reLoad() {
-  },
+    /**
+     * 数据源对象重载数据(参数不会发生变化)
+     *
+     * promise.开头的代理页码会重置为1
+     *
+     * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
+     */
+    reLoad() {},
 
-  /**
-   * @description  设置默认参数并加载数据
-   * @param {object} params 参数
-   * @param {boolean} isReLoad 是否重载
-   * @param {boolean} isAppends 是否追加默认参数
-   */
-  lodaByDefaultParams(params, { isReLoad = false, isAppends = false }) {
-  },
+    /**
+     * @description  设置默认参数并加载数据
+     * @param {object} params 参数
+     * @param {boolean} isReLoad 是否重载
+     * @param {boolean} isAppends 是否追加默认参数
+     */
+    lodaByDefaultParams(params, {
+      isReLoad = false,
+      isAppends = false
+    }) {},
 
-  /**
-   * 移除指定参数(包括默认参数)并加载数据
-   *
-   * @param {*} list 待移除的字符串数组
-   * @param {boolean} [isReLoad=true] 是否重载
-   */
-  removeParamsAndReLoad(list, isReLoad = true) {
-  },
+    /**
+     * 移除指定参数(包括默认参数)并加载数据
+     *
+     * @param {*} list 待移除的字符串数组
+     * @param {boolean} [isReLoad=true] 是否重载
+     */
+    removeParamsAndReLoad(list, isReLoad = true) {},
 
-  /**
-   * 排序
-   *
-   * @param {*} { field 排序字段, order 排序方式}
-   */
-  sort({
-    field,
-    order
-  }) {
-  },
+    /**
+     * 排序
+     *
+     * @param {*} { field 排序字段, order 排序方式}
+     */
+    sort({
+      field,
+      order
+    }) {},
 
-  /**
-   * 清除排序
-   *
-   */
-  clearSort() {
-  },
+    /**
+     * 清除排序
+     *
+     */
+    clearSort() {},
 
-  /**
-   * 获取当前参数（排除分页参数）
-   *
-   * @returns
-   */
-  getParams() {
-  },
+    /**
+     * 获取当前参数（排除分页参数）
+     *
+     * @returns
+     */
+    getParams() {},
 
-  /**
-   * 获取所有参数
-   *
-   * @returns
-   */
-  getAllparams() {
-  }
+    /**
+     * 获取所有参数
+     *
+     * @returns
+     */
+    getAllparams() {}
 ```
 
 ### promise.classic/promise.memory 代理
@@ -419,25 +425,25 @@ const defaultProxy = {
      *
      * @param {number} page
      */
-    loadPageSize(pageSize: number) {
-    },
-    /**
-     * 数据源对象改变页码
-     *
-     * @param {number} page
-     */
-    loadPage(page: number) {
-    },
-    /**
-     * 刷新数据源对象，用于编辑/新增/删除后调用
-     * 编辑后直接重载数据，页码不变
-     * 新增后直接重新加载数据，页码重置为1
-     * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
-     *
-     * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
-     */
-    refresh({ isDel = false, isAdd = false } = {}) {
-    }
+    loadPageSize(pageSize: number) {},
+      /**
+       * 数据源对象改变页码
+       *
+       * @param {number} page
+       */
+      loadPage(page: number) {},
+      /**
+       * 刷新数据源对象，用于编辑/新增/删除后调用
+       * 编辑后直接重载数据，页码不变
+       * 新增后直接重新加载数据，页码重置为1
+       * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
+       *
+       * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
+       */
+      refresh({
+        isDel = false,
+        isAdd = false
+      } = {}) {}
 ```
 
 ### promise.modern 代理
@@ -447,102 +453,106 @@ const defaultProxy = {
      * 加载下一页数据
      *
      */
-    loadNext() {
-    }
+    loadNext() {}
 ```
 
 ## 二次扩展
 
 ```js
 import proxy from "ux-data-proxy";
-import { defaultsDeep, mixin } from "lodash";
-import { Message } from 'element-ui';
+import {
+  defaultsDeep,
+  mixin
+} from "lodash";
+import {
+  Message
+} from 'element-ui';
 // 默认配置1
 const currentProxy = {
-    limitParam: 'pageSize',
-    pageParam: "current",
-    // 显示错误消息
-    isErrorMessage: true,
-    // 初始化后自动加载数据
-    autoLoad: true,
-    // 读取数据相关配置
-    reader: {
-        // 数据根节点
-        rootProperty: "data.data.records",
-        successProperty: "data.code",
-        totalProperty: "data.data.total",
-        messageProperty: 'data.data.msg'
-    }
+  limitParam: 'pageSize',
+  pageParam: "current",
+  // 显示错误消息
+  isErrorMessage: true,
+  // 初始化后自动加载数据
+  autoLoad: true,
+  // 读取数据相关配置
+  reader: {
+    // 数据根节点
+    rootProperty: "data.data.records",
+    successProperty: "data.code",
+    totalProperty: "data.data.total",
+    messageProperty: 'data.data.msg'
+  }
 };
 // 默认配置2
 const defaultProxy = {
-    limitParam: 'pageSize',
-    pageParam: 'currentPage',
-    autoLoad: true,
-    disposeItem: function(item) {
-        console.log(item);
-        // 这里处理单条数据如：item.a = 123;
-    },
-    // 读取数据相关配置
-    reader: {
-        // 数据根节点
-        rootProperty: "data.records",
-        successProperty: "code",
-        totalProperty: "data.total",
-        messageProperty: 'data.msg'
-    }
+  limitParam: 'pageSize',
+  pageParam: 'currentPage',
+  autoLoad: true,
+  disposeItem: function(item) {
+    console.log(item);
+    // 这里处理单条数据如：item.a = 123;
+  },
+  // 读取数据相关配置
+  reader: {
+    // 数据根节点
+    rootProperty: "data.records",
+    successProperty: "code",
+    totalProperty: "data.total",
+    messageProperty: 'data.msg'
+  }
 };
 // 扩展数据请求代理
 export default {
-    /**
-    * 初始化
-     *
-     * @param {*} store,数据源对象
-     */
-    init(store) {
-        // 根据配置类型读取不同的默认配置
-        switch (store.proxy.configType) {
-            case 'current':
-                store.proxy = defaultsDeep(store.proxy, currentProxy);
-                break;
-            default:
-                store.proxy = defaultsDeep(store.proxy, defaultProxy);
-                break;
-        }
-        console.log('newStore.init');
-        // 它本身的方法会被代理对象的方法覆盖，放在后面则相反
-        mixin(store, this);
-        // 将当前代理对象的方法挂载到数据源对象，代理对象的方法会覆盖代理对象原有的方法
-        proxy.init(store);
-        // 如果放在 proxy.init(store);之后执行
-        // 如果设置了初始化自动加载，首次请求writerTransform不会触发
-    },
-    // 扩展，请求失败后执行函数
-    // 如果在代理中有相同扩展方法，会被覆盖
-    failure(res) {
-        const me = this as any;
-        if (me.proxy.isErrorMessage) {
-            // 显示错误提示
-            Message({
-                // duration:0,
-                message: res.message,
-                type: "error",
-                customClass: "zZindex"
-            });
-        }
-    },
-    // 扩展，请求数据成功后处理数据结果函数
-    // 如果在代理中有相同扩展方法，会被覆盖
-    readerTransform(res) {
-        console.log('readerTransform')
-        return res;
-    },
-    // 扩展，请求数据前处理请求参数函数
-    // 如果在代理中有相同扩展方法，会被覆盖
-    writerTransform(params) {
-        console.log('writerTransform')
-        return params;
+  /**
+   * 初始化
+   *
+   * @param {*} store,数据源对象
+   */
+  init(store) {
+    // 根据配置类型读取不同的默认配置
+    switch (store.proxy.configType) {
+      case 'current':
+        store.proxy = defaultsDeep(store.proxy, currentProxy);
+        break;
+      default:
+        store.proxy = defaultsDeep(store.proxy, defaultProxy);
+        break;
     }
+    console.log('newStore.init');
+    // 它本身的方法会被代理对象的方法覆盖，放在后面则相反
+    mixin(store, this);
+    // 将当前代理对象的方法挂载到数据源对象，代理对象的方法会覆盖代理对象原有的方法
+    proxy.init(store);
+    // 如果放在 proxy.init(store);之后执行
+    // 如果设置了初始化自动加载，首次请求writerTransform不会触发
+  },
+  // 扩展，请求失败后执行函数
+  // 如果在代理中有相同扩展方法，会被覆盖
+  failure(res) {
+    const me = this as any;
+    if (me.proxy.isErrorMessage) {
+      // 显示错误提示
+      Message({
+        // duration:0,
+        message: res.message,
+        type: "error",
+        customClass: "zZindex"
+      });
+    }
+  },
+  // 扩展，请求数据成功后处理数据结果函数
+  // 如果在代理中有相同扩展方法，会被覆盖
+  readerTransform(res) {
+    console.log('readerTransform')
+    return res;
+  },
+  // 扩展，请求数据前处理请求参数函数
+  // 如果在代理中有相同扩展方法，会被覆盖
+  writerTransform(params) {
+    console.log('writerTransform')
+    return params;
+  }
 }
 ```
 
@@ -609,7 +619,6 @@ graph TD
     BLE(loadEnd)
     MM --> | 结束请求 | BLE
     CP --> | 结束请求 | BLE
-
 
     classDef promise fill:#f9f,stroke:#333;
     class PS,PL,PR promise;

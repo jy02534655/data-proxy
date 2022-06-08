@@ -6,9 +6,6 @@ npm init
 
 ## 扩展
 
-### typescript
-npm install --save-dev typescript
-
 ### lodash
 
 npm i --save lodash

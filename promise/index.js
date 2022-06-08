@@ -88,7 +88,7 @@ export default {
         if (proxy.isReLoad) {
           proxy.isReLoad = false;
         }
-        proxy.loadSuccess && proxy.loadSuccess(response, proxy, me);
+        proxy.success && proxy.success(response, proxy, me);
         return response;
       })
       .catch((res) => {

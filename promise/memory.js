@@ -1,4 +1,20 @@
-import { mixin, orderBy, get, slice, defaultsDeep } from 'lodash';
+import {
+  mixin,
+  orderBy,
+  get,
+  slice,
+  defaultsDeep,
+  filter,
+  cloneDeep,
+  find,
+  set,
+  isFunction,
+  unset,
+  isPlainObject,
+  toNumber,
+  toString
+} from 'lodash';
+import { isEmpty, clearObject, checkCondition } from '../utils';
 // 默认配置参数
 const defaultProxy = {
   // 清除分页参数
@@ -28,6 +44,8 @@ export default {
     if (proxy.isSubLoad) {
       // 是的话就拉取数据
       return me.readData(proxy).then(({ data }) => {
+        // 重置原始过滤数据
+        me.baseFilterData = [];
         // 将拉取到的数据保存到内存中
         me.memoryData = data;
         // 从内存中获取分页数据
@@ -70,5 +88,29 @@ export default {
       data,
       total: memoryData.length
     };
+  },
+  /**
+   * 通过 predicate（断言函数） 从内存数据中过滤数据
+   *
+   * @export
+   * @param {Array|Function|Object|String} predicat 断言函数
+   */
+  filter(predicat) {
+    if (isPlainObject(predicat)) {
+      // 过滤空条件
+      predicat = clearObject(predicat);
+    }
+    // 获取原始数据
+    let baseFilterData = this.baseFilterData;
+    if (isEmpty(baseFilterData)) {
+      // 原始数据不存在则从内存数据中获取
+      baseFilterData = this.baseFilterData = cloneDeep(this.memoryData);
+    }
+    // 过滤数据
+    const data = filter(baseFilterData, predicat);
+    // 将过滤后的数据保存到内存中
+    this.memoryData = data;
+    // 加载到第一页
+    this.loadPage(1);
   }
 };
