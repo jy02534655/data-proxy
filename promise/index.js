@@ -1,4 +1,4 @@
-import { mixin, set, isFunction, defaultsDeep } from 'lodash';
+import { mixin, set, isFunction, defaultsDeep, ceil } from 'lodash';
 // 经典代理（pc端）
 import classic from './classic';
 // 内存代理
@@ -84,6 +84,8 @@ export default {
       .then((response) => {
         const { total } = response;
         proxy.total = total;
+        // 最大页码
+        proxy.maxPage = ceil(total / proxy.pageSize);
         // 如果当前标识为重载数据，重置标识状态为false，预留扩展
         if (proxy.isReLoad) {
           proxy.isReLoad = false;
@@ -116,10 +118,9 @@ export default {
       // 标识正在请求数据
       me.isLoading = true;
       // 读取store配置
-      const { pageSize, page, writerTransform, clearPageParams, beforLoad } =
-        proxy;
+      const { pageSize, page, writerTransform, clearPageParams, beforLoad } = proxy;
       beforLoad && beforLoad(proxy);
-      let { params = {}} = proxy;
+      let { params = {} } = proxy;
       if (!clearPageParams) {
         // 设置分页相关参数
         set(params, proxy.limitParam, pageSize);
@@ -135,6 +136,8 @@ export default {
       // console.log('extraParams', proxy.extraParams);
       // 读取并处理数据，调用预留函数，让子代理实现具体逻辑
       me.promiseReadDataEnd();
+    } else {
+      console.error('上个请求还未结束，当前请求已中断！');
     }
   },
   /**
