@@ -8,11 +8,13 @@
 
 ### 优化
 
+*修复移动端代理在处理空数据时状态错误bug
+
+### 新增
+
 *proxy对象中新增maxPage（最大页码）
 
 *内存代理新增loadData、pushData、filter、remove、removeByIds、removeAll、getAllData方法
-
-*修复移动端代理在处理空数据时状态错误bug
 
 ## [1.2.3] - 2022-06-08
 
