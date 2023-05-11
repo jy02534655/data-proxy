@@ -31,7 +31,7 @@ export default {
     me.loadByProxy();
   },
   /**
-   * 将数据追加到内存中
+   * 将数据追加到内存代理中
    *
    * @param {*} data -数据
    * @param {boolean} isReLoad - 是否是重新加载
