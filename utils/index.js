@@ -1,10 +1,4 @@
-import {
-  isEmpty as lodashIsEmpty,
-  isNumber,
-  pickBy,
-  isBoolean,
-  isDate
-} from 'lodash';
+import { isEmpty as lodashIsEmpty, isNumber, pickBy, isBoolean, isDate } from 'lodash';
 
 /**
  * 判断是否为空对象，空字符串，null
