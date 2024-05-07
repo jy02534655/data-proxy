@@ -57,7 +57,7 @@ export default {
       // 判断是否需要加载更多数据
       let isFinished = false;
       // console.log(me.data.length, me.proxy.total)
-      if (me.proxy.total && me.data.length >= me.proxy.total) {
+      if (me.proxy.total >= 0 && me.data.length >= me.proxy.total) {
         isFinished = true;
       }
       // 是否还有更多数据需要加载

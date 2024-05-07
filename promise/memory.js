@@ -1,20 +1,5 @@
-import {
-  mixin,
-  orderBy,
-  get,
-  slice,
-  defaultsDeep,
-  filter,
-  cloneDeep,
-  find,
-  set,
-  isFunction,
-  unset,
-  isPlainObject,
-  toNumber,
-  toString
-} from 'lodash';
-import { isEmpty, clearObject, checkCondition } from '../utils';
+import { mixin, orderBy, get, slice, defaultsDeep, filter, isPlainObject, remove } from 'lodash';
+import { clearObject } from '../utils';
 // 默认配置参数
 const defaultProxy = {
   // 清除分页参数
@@ -34,6 +19,32 @@ export default {
     mixin(store, this);
   },
   /**
+   * 将数据保存到内存代理中，然后分页处理
+   *
+   * @param {object} data - 数据
+   */
+  loadData(data) {
+    const me = this;
+    // 将拉取到的数据保存到内存中
+    me.memoryData = data;
+    me.pgingData = data;
+    me.loadByProxy();
+  },
+  /**
+   * 将数据追加到内存代理中
+   *
+   * @param {*} data -数据
+   * @param {boolean} isReLoad - 是否是重新加载
+   */
+  pushData(data, isReLoad) {
+    const me = this;
+    me.memoryData.push(data);
+    me.pgingData.push(data);
+    if (isReLoad) {
+      me.loadData(me.memoryData);
+    }
+  },
+  /**
    * @description 读取数据
    * @param {*} proxy 代理配置
    * @return {*}
@@ -44,10 +55,9 @@ export default {
     if (proxy.isSubLoad) {
       // 是的话就拉取数据
       return me.readData(proxy).then(({ data }) => {
-        // 重置原始过滤数据
-        me.baseFilterData = [];
         // 将拉取到的数据保存到内存中
         me.memoryData = data;
+        me.pgingData = data;
         // 从内存中获取分页数据
         return me.memoryPagination();
       });
@@ -67,7 +77,7 @@ export default {
     // 分页排序相关配置
     const { pageSize, page, sortData } = proxy;
     // 从数据源中获取数据
-    let memoryData = me.memoryData;
+    let pgingData = me.pgingData;
     if (page == 1) {
       // 页码为1时根据排序配置重新排序
       // 排序字段
@@ -76,18 +86,31 @@ export default {
         // 排序方式
         const order = get(sortData, proxy.directionParam);
         // 重设数据源
-        me.memoryData = memoryData = orderBy(memoryData, field, order);
+        me.pgingData = pgingData = orderBy(pgingData, field, order);
       }
     }
     // 内存数据起始序号
     const start = (page - 1) * pageSize;
     // 获取当前页码数据
-    const data = slice(memoryData, start, start + pageSize);
+    const data = slice(pgingData, start, start + pageSize);
     // 返回数据
     return {
       data,
-      total: memoryData.length
+      total: pgingData.length
     };
+  },
+  /**
+   * predicate（断言函数）,如果predicat是纯对象，那么返回过滤空条件后的对象。
+   *
+   * @param {Object} predicat - predicat 断言函数
+   * @return {Object} 处理结果
+   */
+  getPredicate(predicat) {
+    if (isPlainObject(predicat)) {
+      // 过滤空条件
+      predicat = clearObject(predicat);
+    }
+    return predicat;
   },
   /**
    * 通过 predicate（断言函数） 从内存数据中过滤数据
@@ -96,21 +119,53 @@ export default {
    * @param {Array|Function|Object|String} predicat 断言函数
    */
   filter(predicat) {
-    if (isPlainObject(predicat)) {
-      // 过滤空条件
-      predicat = clearObject(predicat);
-    }
-    // 获取原始数据
-    let baseFilterData = this.baseFilterData;
-    if (isEmpty(baseFilterData)) {
-      // 原始数据不存在则从内存数据中获取
-      baseFilterData = this.baseFilterData = cloneDeep(this.memoryData);
-    }
+    predicat = this.getPredicate(predicat);
     // 过滤数据
-    const data = filter(baseFilterData, predicat);
-    // 将过滤后的数据保存到内存中
-    this.memoryData = data;
+    const data = filter(this.memoryData, predicat);
+    // 将过滤后的数据保存到分页数据中
+    this.pgingData = data;
     // 加载到第一页
     this.loadPage(1);
+  },
+  /**
+   * 通过 predicate（断言函数） 从内存数据中删除数据
+   *
+   * @export
+   * @param {Array|Function|Object|String} predicat 断言函数
+   */
+  remove(predicat) {
+    predicat = this.getPredicate(predicat);
+    // 移除数据
+    const data = remove(this.memoryData, predicat);
+    remove(this.pgingData, predicat);
+    this.refresh({ state: 2, delCount: data.length });
+  },
+  /**
+   * 从内存数据中删除指定 id 数据
+   *
+   * @param {Array} ids - 要删除的 id 数组。
+   * @param {string} [key='id'] - 用于查找每个对象中 id 的键。
+   */
+  removeByIds(ids = [], key = 'id') {
+    this.remove((item) => {
+      const id = get(item, key);
+      const is = ids.includes(id);
+      if (is) {
+        remove(ids, (item) => item == id);
+      }
+      return is;
+    });
+  },
+  /**
+   * 清空所有数据
+   */
+  removeAll() {
+    this.loadData([]);
+  },
+  /**
+   * 获取所有数据
+   */
+  getAllData() {
+    return this.memoryData;
   }
 };

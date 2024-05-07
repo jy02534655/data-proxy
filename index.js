@@ -1,20 +1,6 @@
 import promiseProxy from './promise/index';
 import { clearObject } from './utils';
-import {
-  cloneDeep,
-  isPlainObject,
-  mixin,
-  defaultsDeep,
-  split,
-  isFunction,
-  drop,
-  defaults,
-  get,
-  set,
-  forEach,
-  assign,
-  unset
-} from 'lodash';
+import { cloneDeep, isPlainObject, mixin, defaultsDeep, split, isFunction, drop, defaults, get, set, forEach, assign, unset } from 'lodash';
 
 // 默认配置参数
 const defaultProxy = {
@@ -147,9 +133,7 @@ export default {
   lodaByDefaultParams(params, { isReLoad = false, isAppends = false } = {}) {
     const me = this;
     // 设置默认参数
-    me.proxy.defaultParams = isAppends
-      ? assign(me.proxy.defaultParams, params)
-      : params;
+    me.proxy.defaultParams = isAppends ? assign(me.proxy.defaultParams, params) : params;
     isReLoad ? me.reLoad() : me.load();
   },
 
@@ -253,13 +237,7 @@ export default {
                  message: '您的网络不佳,请检查您的网络'
              }) message 提示
   */
-  async readData({
-    requestFun,
-    params,
-    disposeItem,
-    reader,
-    readerTransform
-  } = {}) {
+  async readData({ requestFun, params, disposeItem, reader, readerTransform } = {}) {
     if (!requestFun) {
       console.error('requestFun未配置');
       // 失败回调

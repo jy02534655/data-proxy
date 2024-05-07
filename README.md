@@ -4,6 +4,18 @@
 
 # 更新日志
 
+## [1.2.4] - 2023-05-10
+
+### 优化
+
+*修复移动端代理在处理空数据时状态错误bug
+
+### 新增
+
+*proxy对象中新增maxPage（最大页码）
+
+*内存代理新增loadData、pushData、filter、remove、removeByIds、removeAll、getAllData方法
+
 ## [1.2.3] - 2022-06-08
 
 ### 变更
@@ -295,6 +307,8 @@ const defaultProxy = {
   page: 1,
   // 数据总数，禁止更改
   total: 0,
+  //最大页码
+  maxPage: 0,
   // 分页每页显示条数字段名称，默认为limit，此参数传递到请求数据函数
   limitParam: 'limit',
   // 分页页码字段名称，默认为page，此参数传递到请求数据函数
@@ -445,6 +459,53 @@ const defaultProxy = {
         isDel = false,
         isAdd = false
       } = {}) {}
+```
+
+### promise.memory 代理
+
+```js
+/**
+ * 将数据保存到内存中，然后分页处理
+ *
+ * @param {object} data - 数据
+ */
+loadData(data) {},
+  /**
+   * 将数据追加到内存代理中
+   *
+   * @param {*} data -数据
+   * @param {boolean} isReLoad - 是否是重新加载
+   */
+  pushData(data, isReLoad) {},
+  /**
+   * 通过 predicate（断言函数） 从内存数据中过滤数据
+   *
+   * @export
+   * @param {Array|Function|Object|String} predicat 断言函数
+   */
+  filter(predicat) {},
+  /**
+   * 通过 predicate（断言函数） 从内存数据中删除数据
+   *
+   * @export
+   * @param {Array|Function|Object|String} predicat 断言函数
+   */
+  remove(predicat) {},
+  /**
+   * 从内存数据中删除指定 id 数据
+   *
+   * @param {Array} ids - 要删除的 id 数组。
+   * @param {string} [key='id'] - 用于查找每个对象中 id 的键。
+   */
+  removeByIds(ids = [], key = 'id') {},
+  /**
+   * 清空所有数据
+   */
+  removeAll() {},
+  /**
+   * 获取所有数据
+   */
+  getAllData() {}
 ```
 
 ### promise.modern 代理
