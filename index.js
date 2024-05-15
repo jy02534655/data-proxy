@@ -1,5 +1,5 @@
 import promiseProxy from './promise/index';
-import { clearObject } from './utils';
+import { clearObject, isEmpty } from './utils';
 import { cloneDeep, isPlainObject, mixin, defaultsDeep, split, isFunction, drop, defaults, get, set, forEach, assign, unset } from 'lodash';
 
 // 默认配置参数
@@ -88,6 +88,9 @@ export default {
       proxy = me.proxy,
       // 获取默认参数
       { defaultParams, sortData, clearEmptyParams } = proxy;
+    if (isEmpty(params)) {
+      params = {};
+    }
     if (params) {
       // 深度拷贝并处理掉空数据，避免数据变化引起bug
       // 如果是点击事件抛出的参数，cloneDeep处理后会变为{}
@@ -160,12 +163,16 @@ export default {
    *
    * @param {*} { field 排序字段, order 排序方式}
    */
-  sort({ field, order }) {
+  sort({ field, order } = {}) {
     const me = this,
       proxy = me.proxy,
       sortParam = {};
+    if (!isEmpty(field)) {
     set(sortParam, proxy.sortParam, field);
+    }
+    if (!isEmpty(order)) {
     set(sortParam, proxy.directionParam, order);
+    }
     proxy.sortData = sortParam;
     me.load(me.getParams());
   },

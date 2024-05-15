@@ -1,10 +1,24 @@
-import { mixin, orderBy, get, slice, defaultsDeep, filter, isPlainObject, remove } from 'lodash';
+import { mixin, orderBy, get, slice, defaultsDeep, filter, isPlainObject, remove, findIndex } from 'lodash';
 import { clearObject } from '../utils';
 // 默认配置参数
 const defaultProxy = {
   // 清除分页参数
   clearPageParams: true
 };
+
+/**
+ * 数组交换位置
+ *
+ * @export
+ * @param {*} arr 数组
+ * @param {*} oldIndex 旧位置
+ * @param {*} newIndex 新位置
+ */
+export function swapArray(arr, oldIndex, newIndex) {
+  const page = arr[oldIndex];
+  arr.splice(oldIndex, 1);
+  arr.splice(newIndex, 0, page);
+}
 
 export default {
   /**
@@ -17,6 +31,8 @@ export default {
     defaultsDeep(store.proxy, defaultProxy);
     // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
     mixin(store, this);
+    store.memoryData = [];
+    store.pgingData = [];
   },
   /**
    * 将数据保存到内存代理中，然后分页处理
@@ -161,6 +177,49 @@ export default {
    */
   removeAll() {
     this.loadData([]);
+  },
+  /**
+   * 根据相对序号获取实际序号
+   *
+   * @export
+   * @param {Number} index 相对序号
+   */
+  getRealIndex(index) {
+    const { page, pageSize } = this.proxy;
+    const pgingIndex = (page - 1) * pageSize + index;
+    const memoryIdex = findIndex(this.memoryData, this.pgingData[pgingIndex]);
+    return { memoryIdex, pgingIndex };
+  },
+  /**
+   * 更改序号
+   *
+   * @param {number} newIndex - 元素的新位置索引(当前分页)
+   * @param {number} oldIndex - 元素当前的位置索引(当前分页)
+   * @return {void}
+   */
+  changeSort(newIndex, oldIndex) {
+    const { memoryData, pgingData } = this;
+    // 获取真实索引
+    const { memoryIdex: newMemoryIdex, pgingIndex: newPgingIndex } = this.getRealIndex(newIndex);
+    const { memoryIdex, pgingIndex } = this.getRealIndex(oldIndex);
+    // 交换位置
+    swapArray(memoryData, memoryIdex, newMemoryIdex);
+    swapArray(pgingData, pgingIndex, newPgingIndex);
+  },
+
+  /**
+   * 通过索引移除数据
+   *
+   * @param {number} index - 要移除的项目的索引(当前分页)
+   * @return {void}
+   */
+  removeItemByIndex(index) {
+    const { memoryIdex, pgingIndex } = this.getRealIndex(index);
+    // 删除数据
+    this.memoryData.splice(memoryIdex, 1);
+    this.pgingData.splice(pgingIndex, 1);
+    // 刷新数据
+    this.refresh({ state: 2 });
   },
   /**
    * 获取所有数据

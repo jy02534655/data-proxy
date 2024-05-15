@@ -4,6 +4,16 @@
 
 # 更新日志
 
+## [1.2.5] - 2024-05-15
+
+### 优化
+
+*修复排序、加载函数参数不存在导致错误bug
+
+### 新增
+
+*内存代理新增changeSort、removeItemByIndex方法
+
 ## [1.2.4] - 2023-05-10
 
 ### 优化
@@ -503,9 +513,25 @@ loadData(data) {},
    */
   removeAll() {},
   /**
-   * 获取所有数据
+   * 更改序号
+   *
+   * @param {number} newIndex - 元素的新位置索引(当前分页)
+   * @param {number} oldIndex - 元素当前的位置索引(当前分页)
+   * @return {void}
    */
-  getAllData() {}
+  changeSort(newIndex, oldIndex) {},
+
+  /**
+   * 通过索引移除数据
+   *
+   * @param {number} index - 要移除的项目的索引(当前分页)
+   * @return {void}
+   */
+  removeItemByIndex(index) {}
+/**
+ * 获取所有数据
+ */
+getAllData() {}
 ```
 
 ### promise.modern 代理
