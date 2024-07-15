@@ -51,6 +51,19 @@ export default {
     me.loadByProxy();
   },
   /**
+   * 数据源对象改变页码和参数
+   *
+   * @param {number} page
+   *  @param {any} params
+   */
+  loadPageByParams(page, params) {
+    const me = this,
+      proxy = me.proxy;
+    me.proxy.page = page;
+    proxy.params = me.getLoadParams(params);
+    me.loadByProxy();
+  },
+  /**
    * 刷新数据源对象，用于编辑/删除后调用
    * 编辑后直接重载数据，页码不变
    * 新增后直接重新加载数据，页码重置为1

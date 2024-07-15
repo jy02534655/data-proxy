@@ -74,30 +74,15 @@ export default {
     }
   },
 
-  /**
-   * 数据源对象加载数据
-   *
-   * promise.开头的代理页码会重置为1
-   *
-   * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
-   *
-   * @param {object} params 查询参数
-   */
-  load(params) {
+  getLoadParams(params) {
     const me = this,
       proxy = me.proxy,
       // 获取默认参数
       { defaultParams, sortData, clearEmptyParams } = proxy;
-    if (isEmpty(params)) {
-      params = {};
-    }
     if (params) {
       // 深度拷贝并处理掉空数据，避免数据变化引起bug
       // 如果是点击事件抛出的参数，cloneDeep处理后会变为{}
       params = cloneDeep(params);
-      if (clearEmptyParams) {
-        params = clearObject(params);
-      }
     }
     // 如果存在默认参数,则添加默认参数
     if (isPlainObject(defaultParams)) {
@@ -111,7 +96,25 @@ export default {
       // 默认参数会被新参数覆盖
       params = defaults(params, sortData);
     }
-    proxy.params = params;
+    if (params && clearEmptyParams) {
+      params = clearObject(params);
+    }
+    return params;
+  },
+  
+  /**
+   * 数据源对象加载数据
+   *
+   * promise.开头的代理页码会重置为1
+   *
+   * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
+   *
+   * @param {object} params 查询参数
+   */
+  load(params) {
+    const me = this,
+      proxy = me.proxy;
+    proxy.params = me.getLoadParams(params);
     // 数据源对象加载数据，调用预留函数，让子代理实现具体逻辑
     me.subLoad();
   },

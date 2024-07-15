@@ -4,6 +4,12 @@
 
 # 更新日志
 
+## [1.2.6] - 2024-07-15
+
+### 新增
+
+*经典代理新增loadPageByParams方法
+
 ## [1.2.5] - 2024-05-15
 
 ### 优化
@@ -445,30 +451,37 @@ const defaultProxy = {
 ### promise.classic/promise.memory 代理
 
 ```js
-    /**
-     * 数据源对象改变每页显示条数，页码重置为1
-     *
-     * @param {number} page
-     */
-    loadPageSize(pageSize: number) {},
-      /**
-       * 数据源对象改变页码
-       *
-       * @param {number} page
-       */
-      loadPage(page: number) {},
-      /**
-       * 刷新数据源对象，用于编辑/新增/删除后调用
-       * 编辑后直接重载数据，页码不变
-       * 新增后直接重新加载数据，页码重置为1
-       * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
-       *
-       * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
-       */
-      refresh({
-        isDel = false,
-        isAdd = false
-      } = {}) {}
+/**
+ * 数据源对象改变每页显示条数，页码重置为1
+ *
+ * @param {number} page
+ */
+loadPageSize(pageSize) {},
+  /**
+   * 数据源对象改变页码
+   *
+   * @param {number} page
+   */
+  loadPage(page) {},
+  /**
+   * 刷新数据源对象，用于编辑/新增/删除后调用
+   * 编辑后直接重载数据，页码不变
+   * 新增后直接重新加载数据，页码重置为1
+   * 删除后根据剩余数据总数和页面等灵活设置页码，不变或减1
+   *
+   * @param {*} [{ isDel = false 是否删除数据, isAdd = false 是否新增数据}={}]
+   */
+  /**
+   * 数据源对象改变页码和参数
+   *
+   * @param {number} page
+   *  @param {any} params
+   */
+  loadPageByParams(page, params) {},
+  refresh({
+    isDel = false,
+    isAdd = false
+  } = {}) {}
 ```
 
 ### promise.memory 代理

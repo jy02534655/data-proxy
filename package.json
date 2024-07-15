@@ -1,6 +1,6 @@
 {
     "name": "ux-data-proxy",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "description": "this is a vue data proxy",
     "main": "index.ts",
     "scripts": {
