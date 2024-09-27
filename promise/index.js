@@ -148,5 +148,16 @@ export default {
     const me = this;
     me.proxy.page = 1;
     me.loadByProxy(true);
+  },
+  // 加载store下一页
+  loadNext() {
+    const me = this,
+      proxy = me.proxy,
+      page = proxy.page;
+    // 如果正在加载，终止
+    if (page && !me.isLoading) {
+      proxy.page = page + 1;
+      me.loadByProxy();
+    }
   }
 };

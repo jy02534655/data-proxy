@@ -3,6 +3,11 @@
 这是一个数据代理扩展，灵感来至于 ExtJs 中的 `Ext.data.Store`
 
 # 更新日志
+## [1.2.7] - 2024-09-27
+
+### 优化
+
+*所有代理都可以使用loadNext
 
 ## [1.2.6] - 2024-07-15
 
@@ -100,6 +105,7 @@
 ### 优化
 
 * 优化帮助类 `isEmpty` 方法
+
 # 安装代理模块
 
 npm install ux-data-proxy
@@ -390,6 +396,12 @@ const defaultProxy = {
     load(params) {},
 
     /**
+     * 加载下一页数据
+     *
+     */
+    loadNext() {},
+
+    /**
      * 数据源对象重载数据(参数不会发生变化)
      *
      * promise.开头的代理页码会重置为1
@@ -545,16 +557,6 @@ loadData(data) {},
  * 获取所有数据
  */
 getAllData() {}
-```
-
-### promise.modern 代理
-
-```js
-    /**
-     * 加载下一页数据
-     *
-     */
-    loadNext() {}
 ```
 
 ## 二次扩展

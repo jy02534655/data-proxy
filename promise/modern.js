@@ -33,18 +33,6 @@ export default {
         });
     }
   },
-  // 加载store下一页
-  // store:数据源（必填）
-  loadNext() {
-    const me = this,
-      proxy = me.proxy,
-      page = proxy.page;
-    // 如果正在加载，终止
-    if (page && !me.isLoading) {
-      proxy.page = page + 1;
-      me.loadByProxy();
-    }
-  },
   /**
    * 数据加载结束,需要在数据代理中绑定一系列状态
    * 用于移动端处理 交互业务
