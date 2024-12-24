@@ -1,4 +1,5 @@
 import promiseProxy from './promise/index';
+import localProxy from './local/index';
 import { clearObject, isEmpty } from './utils';
 import { cloneDeep, isPlainObject, mixin, defaultsDeep, split, isFunction, drop, defaults, get, set, forEach, assign, unset } from 'lodash';
 
@@ -62,6 +63,9 @@ export default {
     proxy.type = drop(key).toString();
     // 根据代理类型第一级挂载代理对象
     switch (key[0]) {
+      case 'local':
+        localProxy.init(store);
+        break;
       // 经典代理
       default:
         // 初始化代理对象
@@ -101,7 +105,7 @@ export default {
     }
     return params;
   },
-  
+
   /**
    * 数据源对象加载数据
    *
@@ -171,10 +175,10 @@ export default {
       proxy = me.proxy,
       sortParam = {};
     if (!isEmpty(field)) {
-    set(sortParam, proxy.sortParam, field);
+      set(sortParam, proxy.sortParam, field);
     }
     if (!isEmpty(order)) {
-    set(sortParam, proxy.directionParam, order);
+      set(sortParam, proxy.directionParam, order);
     }
     proxy.sortData = sortParam;
     me.load(me.getParams());
