@@ -1,10 +1,6 @@
-import { mixin, set, isFunction, defaultsDeep, ceil } from 'lodash';
-// 经典代理（pc端）
-import classic from './classic';
-// 内存代理
-import memory from './memory';
-// 现代代理（移动端）
-import modern from './modern';
+import { BaseProxy } from '../core/base';
+import { set, isFunction, defaultsDeep, ceil } from 'lodash';
+
 // 默认配置参数
 const defaultProxy = {
   // 每次加载几条数据，默认为10
@@ -18,49 +14,12 @@ const defaultProxy = {
   // 分页页码字段名称，默认为page，此参数传递到请求数据函数
   pageParam: 'page'
 };
-// 通过Promise函数请求数据代理
-export default {
-  /**
-   * 初始化
-   *
-   * @param {*} store,数据源对象
-   */
-  init(store) {
-    const me = this,
-      proxy = store.proxy;
-    // 读取并设置默认配置，默认配置会被新配置覆盖
-    defaultsDeep(proxy, defaultProxy);
-    // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
-    mixin(store, me);
-    // console.log('proxy.promise.init', proxy);
-    // 根据代理类型挂载代理对象
-    // 默认挂载经典代理
-    switch (proxy.type) {
-      case 'modern':
-        mixin(store, modern);
-        break;
-      case 'memory':
-        // 在classic代理基础上扩展
-        classic.init(store);
-        memory.init(store);
-        break;
-      default:
-        classic.init(store);
-        break;
-    }
-    // 获取readerTransform配置
-    if (!proxy.readerTransform) {
-      proxy.readerTransform = store.readerTransform;
-    }
-    // 获取writerTransform配置
-    if (!proxy.writerTransform) {
-      proxy.writerTransform = store.writerTransform;
-    }
-    // 获取failure配置
-    if (!proxy.failure) {
-      proxy.failure = store.failure;
-    }
-  },
+
+export class PromiseProxy extends BaseProxy {
+  constructor(store) {
+    defaultsDeep(store.proxy, defaultProxy);
+    super(store);
+  }
 
   /**
    * @description 请求数据（为子类预留可覆盖方法）
@@ -68,9 +27,9 @@ export default {
    * @return {*}
    */
   promiseReadData(proxy) {
-    // 这样写能避免作用域问题
     return this.readData(proxy);
-  },
+  }
+
   /**
    * @description 请求数据并做通用逻辑处理，提供给子代理使用
    * @return {Promise}
@@ -100,56 +59,62 @@ export default {
           res
         });
       });
-  },
+  }
+
   /**
    * 根据代理配置加载数据
    * 这里不接收params是为了避免调整页码等参数时需要传参
+   * @param {boolean} isSubLoad 是否是通过subLoad调用
    */
-  loadByProxy(isSubLoad = false) {
-    const me = this,
-      proxy = me.proxy;
+  loadByProxy(isSubLoad) {
+    const me = this;
+    const proxy = me.proxy;
     // 标识当前是否是通过subLoad调用
     // memory代理中用来判断是否从内存中读取数据
     proxy.isSubLoad = isSubLoad;
-    // 当前代理状态
-    // console.log('proxy isLoading', me.isLoading);
     // 如果正在请求数据，不做任何操作，过滤高频请求
-    if (!me.isLoading) {
+    if (!me.store.isLoading) {
       // 标识正在请求数据
-      me.isLoading = true;
-      // 读取store配置
+      me.store.isLoading = true;
+
       const { pageSize, page, writerTransform, clearPageParams, beforLoad } = proxy;
       beforLoad && beforLoad(proxy);
+
       let { params = {} } = proxy;
       if (!clearPageParams) {
         // 设置分页相关参数
         set(params, proxy.limitParam, pageSize);
         set(params, proxy.pageParam, page);
       }
+
       // 如果有请求数据前处理请求参数函数，执行它
       if (isFunction(writerTransform)) {
         // 有时候需要在请求前处理参数
         params = writerTransform(params, proxy);
       }
+
       // 设置代理参数
       proxy.params = params;
-      // console.log('extraParams', proxy.extraParams);
-      // 读取并处理数据，调用预留函数，让子代理实现具体逻辑
       me.promiseReadDataEnd();
     } else {
       console.error('上个请求还未结束，当前请求已中断！');
     }
-  },
+  }
+
   /**
-   * 数据源对象加载数据，页码重置为1
-   *
+   * page重置为1并加载数据
+   * @method subLoad
    */
   subLoad() {
     const me = this;
     me.proxy.page = 1;
     me.loadByProxy(true);
-  },
-  // 加载store下一页
+  }
+
+  /**
+   * 加载下一页数据
+   * @method loadNext
+   */
   loadNext() {
     const me = this,
       proxy = me.proxy,
@@ -160,4 +125,4 @@ export default {
       me.loadByProxy();
     }
   }
-};
+}

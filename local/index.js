@@ -1,6 +1,7 @@
+import { BaseProxy } from '../core/base';
 import low from 'lowdb';
 import LocalStorage from 'lowdb/adapters/LocalStorage';
-import { mixin, defaultsDeep, set, debounce } from 'lodash';
+import { set, debounce, defaultsDeep } from 'lodash';
 
 // 默认配置参数
 const defaultProxy = {
@@ -9,57 +10,62 @@ const defaultProxy = {
   // 本地存储路径，必填
   path: ''
 };
-export default {
+
+/**
+ * 本地存储代理类
+ * 支持数据本地持久化存储，可以配合服务端存储使用
+ */
+export class LocalProxy extends BaseProxy {
+  constructor(store) {
+    defaultsDeep(store.proxy, defaultProxy);
+    super(store);
+    this.initDatabase();
+  }
+
   /**
-   * 初始化,每个数据源对象必须初始化
-   *
-   * @param {*} store,数据源对象
+   * 初始化本地数据库
    */
-  init(store) {
-    const me = this,
-      proxy = store.proxy;
-    // 读取并设置默认配置，默认配置会被新配置覆盖
-    defaultsDeep(proxy, defaultProxy);
-    // 将当前代理对象的函数挂载到数据源对象，代理对象的函数会覆盖代理对象原有的函数
-    mixin(store, me);
+  initDatabase() {
+    const proxy = this.proxy;
     // 初始化数据库对象
     const db = low(new LocalStorage(proxy.dbName));
     // 初始化数据库
     db.defaults({}).write();
     // 数据源对象绑定数据库对象
-    store.db = db;
-    // console.log('proxy.local.init', me.proxy);
-  },
+    this.store.db = db;
+  }
+
   /**
-   * 数据源对象加载数据，页码重置为1
-   *
+   * 加载数据
    */
   subLoad() {
-    const me = this,
-      proxy = me.proxy;
-    // 先请求数据，如果没有设置请求方法或者获取数据失败则转为读取本地数据
+    const me = this;
+    const proxy = me.proxy;
+
+    // 先尝试从服务器请求数据
     me.readData(proxy)
       .then(({ data }) => {
-        me.data = data;
+        me.store.data = data;
       })
       .catch(() => {
-        const data = me.db.get(me.proxy.path).value();
+        // 如果失败则从本地读取
+        const data = me.store.db.get(proxy.path).value();
         if (data) {
-          me.data = data;
+          me.store.data = data;
         }
       });
-  },
+  }
+
   /**
-   * 保存配置
-   *
+   * 保存数据到本地
    */
   saveData() {
-    const me = this,
-      proxy = me.proxy,
-      path = me.proxy.path,
-      localData = me.data;
-    // console.log('saveData', localData)
-    // 先保存数据，如果没有设置保存数据方法或者保存数据数据失败则转为读取本地保存数据
+    const me = this;
+    const proxy = me.proxy;
+    const path = proxy.path;
+    const localData = me.store.data;
+
+    // 先尝试保存到服务器
     me.readData({
       requestFun: proxy.saveFun,
       params: {
@@ -68,29 +74,31 @@ export default {
       },
       reader: proxy.reader
     }).catch(() => {
-      me.db.set(`${path}`, localData).write();
+      // 如果失败则保存到本地
+      me.store.db.set(path, localData).write();
     });
-  },
+  }
+
   /**
-   * 保存某个配置，默认1秒内只会执行saveData方法一次,避免高频调用
-   *
+   * 保存某个配置项，使用防抖动
    * @param {string} name 字段名称
    * @param {*} data 值
-   * @param {number} [wait=1000] 防抖动时间，毫秒
+   * @param {number} wait 防抖动时间(毫秒)
    */
   saveDataByDebounce(name, data, wait = 1000) {
-    const me = this,
-      localData = me.data;
-    // 将新值缓存
+    const me = this;
+    const localData = me.store.data;
+
+    // 更新数据
     set(localData, name, data);
-    let debounceFun = me.debounceFun;
-    // console.log('saveDataByDebounce', localData)
-    if (!debounceFun) {
-      // 检查是否有防抖函数，没有则创建一个
-      debounceFun = me.debounceFun = debounce(function () {
+
+    // 创建或使用已有的防抖函数
+    if (!me.debounceFun) {
+      me.debounceFun = debounce(() => {
         me.saveData();
       }, wait);
     }
-    debounceFun();
+
+    me.debounceFun();
   }
-};
+}
