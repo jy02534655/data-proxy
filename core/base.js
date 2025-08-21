@@ -62,7 +62,7 @@ export class BaseProxy {
    */
   load(params) {
     this.proxy.params = this.getLoadParams(params);
-    this.subLoad();
+    return this.subLoad();
   }
 
   /**
@@ -70,7 +70,7 @@ export class BaseProxy {
    * local代理如果没有配置requestFun会根据dbName与path配置读取本地数据
    */
   reLoad() {
-    this.load(this.proxy.extraParams);
+    return this.load(this.proxy.extraParams);
   }
 
   /**
@@ -82,7 +82,7 @@ export class BaseProxy {
   lodaByDefaultParams(params, { isReLoad = false, isAppends = false } = {}) {
     // 设置默认参数
     this.proxy.defaultParams = isAppends ? assign(this.proxy.defaultParams, params) : params;
-    isReLoad ? this.reLoad() : this.load();
+    return isReLoad ? this.reLoad() : this.load();
   }
 
   /**
@@ -98,7 +98,7 @@ export class BaseProxy {
       // 移除参数
       unset(extraParams, item);
     });
-    isReLoad ? this.reLoad() : this.load();
+    return isReLoad ? this.reLoad() : this.load();
   }
 
   /**
@@ -117,7 +117,7 @@ export class BaseProxy {
     }
 
     proxy.sortData = sortParam;
-    this.load(this.getParams());
+    return this.load(this.getParams());
   }
 
   /**
@@ -125,7 +125,7 @@ export class BaseProxy {
    */
   clearSort() {
     this.proxy.sortData = null;
-    this.load(this.getParams());
+    return this.load(this.getParams());
   }
 
   /**
@@ -147,6 +147,14 @@ export class BaseProxy {
     }
 
     this.store.end && this.store.end(this.store);
+  }
+
+  /**
+   * @description  设置当前参数（排除分页、排序参数）
+   * @param {object} params 参数
+   */
+  setParams(params) {
+    this.proxy.params = this.getLoadParams(params);
   }
 
   /**

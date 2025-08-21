@@ -95,10 +95,10 @@ export class PromiseProxy extends BaseProxy {
 
       // 设置代理参数
       proxy.params = params;
-      me.promiseReadDataEnd();
-    } else {
-      console.error('上个请求还未结束，当前请求已中断！');
+      return me.promiseReadDataEnd();
     }
+    console.error('上个请求还未结束，当前请求已中断！');
+    return Promise.reject();
   }
 
   /**
@@ -108,7 +108,7 @@ export class PromiseProxy extends BaseProxy {
   subLoad() {
     const me = this;
     me.proxy.page = 1;
-    me.loadByProxy(true);
+    return me.loadByProxy(true);
   }
 
   /**
@@ -122,7 +122,8 @@ export class PromiseProxy extends BaseProxy {
     // 如果正在加载，终止
     if (page && !me.isLoading) {
       proxy.page = page + 1;
-      me.loadByProxy();
+      return me.loadByProxy();
     }
+    return Promise.reject();
   }
 }

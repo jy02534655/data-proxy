@@ -14,9 +14,11 @@ export class ClassicProxy extends PromiseProxy {
       .then(({ data }) => {
         me.store.data = data;
         me.loadEnd();
+        return { data, total: me.proxy.total };
       })
       .catch((res) => {
         me.loadEnd(res);
+        return Promise.reject();
       });
   }
 
@@ -27,7 +29,7 @@ export class ClassicProxy extends PromiseProxy {
   loadPageSize(pageSize) {
     this.proxy.pageSize = pageSize;
     this.proxy.page = 1;
-    this.loadByProxy();
+    return this.loadByProxy();
   }
 
   /**
@@ -36,7 +38,7 @@ export class ClassicProxy extends PromiseProxy {
    */
   loadPage(page) {
     this.proxy.page = page;
-    this.loadByProxy();
+    return this.loadByProxy();
   }
 
   /**
@@ -50,7 +52,7 @@ export class ClassicProxy extends PromiseProxy {
       proxy = me.proxy;
     me.proxy.page = page;
     proxy.params = me.getLoadParams(params);
-    me.loadByProxy();
+    return me.loadByProxy();
   }
 
   /**
@@ -81,6 +83,6 @@ export class ClassicProxy extends PromiseProxy {
       }
     }
 
-    this.loadPage(page);
+    return this.loadPage(page);
   }
 }
