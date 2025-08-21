@@ -102,22 +102,31 @@ export class BaseProxy {
   }
 
   /**
-   * 排序
-   * @param {*} { field 排序字段, order 排序方式}
+   * 排序函数，用于设置排序参数并重新加载数据
+   * @param {Object} options 排序配置选项
+   * @param {string} options.field 排序字段名
+   * @param {string} options.order 排序方式(如: asc, desc)
+   * @param {Object} options.params 自定义排序参数
    */
-  sort({ field, order } = {}) {
+  sort({ field, order, params } = {}) {
     const proxy = this.proxy;
     const sortParam = {};
 
-    if (!isEmpty(field)) {
-      set(sortParam, proxy.sortParam, field);
+    // 如果传入了自定义参数，则直接使用自定义参数
+    if (!isEmpty(params)) {
+      proxy.sortData = params;
+    } else {
+      // 否则根据传入的字段和排序方式构建排序参数
+      if (!isEmpty(field)) {
+        set(sortParam, proxy.sortParam, field);
+      }
+      if (!isEmpty(order)) {
+        set(sortParam, proxy.directionParam, order);
+      }
+      proxy.sortData = sortParam;
     }
-    if (!isEmpty(order)) {
-      set(sortParam, proxy.directionParam, order);
-    }
-
-    proxy.sortData = sortParam;
-    return this.load(this.getParams());
+    // 更新代理对象的排序数据并重新加载
+    this.load(this.getParams());
   }
 
   /**
